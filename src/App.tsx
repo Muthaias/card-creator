@@ -1,50 +1,124 @@
-import React from 'react';
-import { Stack, Text, Link, FontWeights } from 'office-ui-fabric-react';
-
-import logo from './fabric.png';
+import React, { useState, useReducer, useEffect } from 'react';
+import { initializeIcons, Stack, Text, Slider, Link, FontWeights, IconButton, DefaultButton, TextField, Dropdown, Panel, CommandBar } from 'office-ui-fabric-react';
+import { ValueSection } from './components/ValueSection';
+import { ItemEditor } from './components/ItemEditor';
+import { Range } from './components/Range';
 
 const boldStyle = {
-  root: { fontWeight: FontWeights.semibold }
+    root: { fontWeight: FontWeights.semibold }
+};
+const stackTokens = {
+    childrenGap: 5,
 };
 
+initializeIcons();
+
 export const App: React.FunctionComponent = () => {
-  return (
-    <Stack
-      horizontalAlign="center"
-      verticalAlign="center"
-      verticalFill
-      styles={{
-        root: {
-          width: '960px',
-          margin: '0 auto',
-          textAlign: 'center',
-          color: '#605e5c'
-        }
-      }}
-      gap={15}
-    >
-      <img src={logo} alt="logo" />
-      <Text variant="xxLarge" styles={boldStyle}>
-        Welcome to Your UI Fabric App
-      </Text>
-      <Text variant="large">For a guide on how to customize this project, check out the UI Fabric documentation.</Text>
-      <Text variant="large" styles={boldStyle}>
-        Essential Links
-      </Text>
-      <Stack horizontal gap={15} horizontalAlign="center">
-        <Link href="https://developer.microsoft.com/en-us/fabric">Docs</Link>
-        <Link href="https://stackoverflow.com/questions/tagged/office-ui-fabric">Stack Overflow</Link>
-        <Link href="https://github.com/officeDev/office-ui-fabric-react/">Github</Link>
-        <Link href="https://twitter.com/officeuifabric">Twitter</Link>
-      </Stack>
-      <Text variant="large" styles={boldStyle}>
-        Design System
-      </Text>
-      <Stack horizontal gap={15} horizontalAlign="center">
-        <Link href="https://developer.microsoft.com/en-us/fabric#/styles/icons">Icons</Link>
-        <Link href="https://developer.microsoft.com/en-us/fabric#/styles/typography">Typography</Link>
-        <Link href="https://developer.microsoft.com/en-us/fabric#/styles/themegenerator">Theme</Link>
-      </Stack>
-    </Stack>
-  );
+    const availableActions = [
+        "left",
+        "right",
+    ]
+    const availableModifiers = [
+        "environment",
+        "people",
+        "security",
+        "money"
+    ]
+    const availableFlags = [
+        "introduction-complete",
+    ]
+    return (
+        <div>
+            <CommandBar
+                items={[
+                    {
+                        key: 'save-card',
+                        text: 'Save Card',
+                        onClick: () => console.log('Save Card')
+                    },
+                    {
+                        key: 'new-card',
+                        text: 'New Card',
+                        onClick: () => console.log('New Card')
+                    },
+                ]}
+                farItems={[
+                    {
+                        key: 'card-list',
+                        text: 'View Card List',
+                        onClick: () => console.log('View Card List')
+                    },
+                    {
+                        key: 'modifier-list',
+                        text: 'View Modifier List',
+                        onClick: () => console.log('View Modifier List')
+                    },
+                    {
+                        key: 'flag-list',
+                        text: 'View Flag List',
+                        onClick: () => console.log('View Flag List')
+                    },
+                    {
+                        key: 'analyze-card-stack',
+                        text: 'Analyze Card Stack',
+                        onClick: () => console.log('Analyze Card Stack')
+                    }
+                ]}
+            />
+            <Stack tokens={{padding: 20}} horizontalAlign="center">
+                <Stack
+                    tokens={stackTokens}
+                    horizontalAlign="stretch"
+                    verticalAlign="start"
+                    verticalFill={true}
+                    styles={{
+                        root: {
+                            color: '#605e5c',
+                            maxWidth: 960,
+                            width: '100%',
+                        }
+                    }}
+                >
+                    <Text>Description</Text>
+                    <Dropdown
+                        label="Urgency"
+                        placeholder="Action urgency"
+                        options={["High", "Medium", "Low"].map(t => ({key: t, text: t}))}
+                    />
+                    <TextField label="Image"/>
+                    <Slider label="Weight" min={0} max={100} step={1} defaultValue={1} showValue/>
+                    <TextField label="Text" multiline autoAdjustHeight/>
+                    <ItemEditor<[number, number]>
+                        items={availableModifiers.map(mid => ({id: mid, name: mid}))}
+                        initialItemIds={[]}
+                        itemDefaultValue={[0, 100]}
+                        onRender={(item, value, onValueChange) => (
+                            <Range
+                                label={item.name}
+                                min={0}
+                                max={100}
+                                value={value}
+                                onChange={(v: [number, number]) => onValueChange(item, v)}
+                                styles={{root: {width: '100%'}}}
+                            />
+                        )}
+                    />
+                    <Stack tokens={stackTokens} horizontal horizontalAlign="stretch" styles={{root: {width: "100%"}}}>
+                        {availableActions.map(actionId => (
+                            <Stack tokens={stackTokens} key={actionId} horizontalAlign="stretch" styles={{root: {width: "100%"}}}>
+                                <Text>Action: {actionId}</Text>
+                                <ValueSection
+                                    initialValueIds={[]}
+                                    values={availableModifiers.map(mid => ({id: mid, name: mid}))}
+                                    initialFlagIds={[]}
+                                    flags={availableFlags.map(fid => ({id: fid, name: fid}))}
+                                    onChange={(d, v, f) => console.log(d, v, f)}
+                                />
+                            </Stack>
+                        ))}
+                    </Stack>
+                </Stack>
+            </Stack>
+        </div>
+    );
 };
