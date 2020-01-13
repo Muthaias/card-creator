@@ -1,8 +1,6 @@
-import React, { useState, useReducer, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Stack,
-    IconButton,
-    DefaultButton,
     TextField,
     Dropdown,
     Slider,
@@ -11,31 +9,68 @@ import {
 import { stackTokens } from '../Styling';
 import { ItemEditor, ItemDescriptor} from './ItemEditor';
 
-type Props = {
-    initialValueIds: string[],
-    values: ItemDescriptor[],
-    initialFlagIds: string[],
-    flags: ItemDescriptor[],
-    onChange?: (description: string, values: {[id: string]: number}, flags: {[id: string]: boolean}, modifierType: string) => void
+type Values = {[x: string]: number};
+type Flags = {[x: string]: boolean};
+
+type ValueSectionProps = {
+    valueItems: ItemDescriptor[],
+    flagItems: ItemDescriptor[],
+    defaultValues?: Values,
+    values?: Values,
+    defaultFlags?: Flags,
+    flags?: Flags,
+    defaultDescription?: string;
+    description?: string;
+    defaultLocation?: string;
+    location?: string;
+    onChange?: (description: string, location: string, values: {[id: string]: number}, flags: {[id: string]: boolean}, modifierType: string) => void
 };
 
-export const ValueSection: React.FunctionComponent<Props> = (props) => {
-    const {values, initialValueIds, flags, initialFlagIds, onChange} = props;
-    const [valueContent, setValueContent] = useState<{[x: string]: number}>({});
-    const [flagContent, setFlagContent] = useState<{[x: string]: boolean}>({});
-    const [description, setDescription] = useState('');
+export const ValueSection: React.FunctionComponent<ValueSectionProps> = (props: ValueSectionProps) => {
+    const {
+        valueItems,
+        flagItems,
+        defaultValues,
+        values,
+        defaultFlags,
+        flags,
+        defaultDescription,
+        description,
+        defaultLocation,
+        location,
+        onChange
+    } = props;
+    const [valueState, setValueState] = useState<Values>(values || defaultValues || {});
+    const [flagState, setFlagState] = useState<Flags>(flags || defaultFlags || {});
+    const [descriptionState, setDescriptionState] = useState(description || defaultDescription || '');
+    const [locationState, setLocationState] = useState(location || defaultLocation || '');
     const modifierTypes: ItemDescriptor[] = [
         {id: 'add', name: 'Add'},
-        {id: 'set', name: 'Set'}
+        {id: 'set', name: 'Set'},
+        {id: 'replace', name: 'Replace'}
     ];
     const [selectedModifierType, setSelectedModifierType] = useState(modifierTypes[0]);
+
     useEffect(() => {
-        if(onChange !== undefined) onChange(description, valueContent, flagContent, selectedModifierType.id);
-    }, [description, valueContent, flagContent, selectedModifierType.id]);
+        if (values !== undefined) setValueState(values);
+    }, [values]);
+    useEffect(() => {
+        if (flags !== undefined) setFlagState(flags);
+    }, [flags]);
+    useEffect(() => {
+        if (description !== undefined) setDescriptionState(description);
+    }, [description]);
+    useEffect(() => {
+        if (location !== undefined) setLocationState(location);
+    }, [location]);
+    useEffect(() => {
+        if(onChange !== undefined) onChange(descriptionState, locationState, valueState, flagState, selectedModifierType.id);
+    }, [descriptionState, locationState, valueState, flagState, selectedModifierType.id]);
 
     return (
         <Stack tokens={stackTokens} horizontalAlign='stretch'>
-            <TextField label="Description" value={description} onChange={(_, value) => value !== undefined && setDescription(value)}/>
+            <TextField label="Description" value={descriptionState} onChange={(_, value) => value !== undefined && setDescriptionState(value)}/>
+            <TextField label="Location" value={locationState} onChange={(_, value) => value !== undefined && setLocationState(value)}/>
             <Dropdown
                 label='Modifier Type'
                 options={modifierTypes.map(t => ({key: t.id, text: t.name}))}
@@ -46,10 +81,11 @@ export const ValueSection: React.FunctionComponent<Props> = (props) => {
                 styles={{root: {width: '100%'}}}
             />
             <ItemEditor<number>
-                items={values}
-                initialItemIds={initialValueIds}
-                itemDefaultValue={0}
-                onChange={(values) => setValueContent(values)}
+                items={valueItems}
+                label={"Select Value"}
+                values={valueState}
+                defaultItemValue={0}
+                onChange={(values) => setValueState(values)}
                 onRender={(item, value, onValueChange) => (
                     <Slider
                         key={item.id}
@@ -68,10 +104,11 @@ export const ValueSection: React.FunctionComponent<Props> = (props) => {
                 )}
             />
             <ItemEditor<boolean>
-                items={flags}
-                initialItemIds={initialFlagIds}
-                itemDefaultValue={true}
-                onChange={(values) => setFlagContent(values)}
+                items={flagItems}
+                label={"Select Flag"}
+                values={flagState}
+                defaultItemValue={true}
+                onChange={(values) => setFlagState(values)}
                 onRender={(item, value, onValueChange) => (
                     <Toggle
                         key={item.id}

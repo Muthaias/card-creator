@@ -90,8 +90,8 @@ export const App: React.FunctionComponent = () => {
                     <TextField label="Text" multiline autoAdjustHeight/>
                     <ItemEditor<[number, number]>
                         items={availableModifiers.map(mid => ({id: mid, name: mid}))}
-                        initialItemIds={[]}
-                        itemDefaultValue={[0, 100]}
+                        label={"Select Value"}
+                        defaultItemValue={[0, 100]}
                         onRender={(item, value, onValueChange) => (
                             <Range
                                 label={item.name}
@@ -108,11 +108,11 @@ export const App: React.FunctionComponent = () => {
                             <Stack tokens={stackTokens} key={actionId} horizontalAlign="stretch" styles={{root: {width: "100%"}}}>
                                 <Text>Action: {actionId}</Text>
                                 <ValueSection
-                                    initialValueIds={[]}
-                                    values={availableModifiers.map(mid => ({id: mid, name: mid}))}
-                                    initialFlagIds={[]}
-                                    flags={availableFlags.map(fid => ({id: fid, name: fid}))}
-                                    onChange={(d, v, f) => console.log(d, v, f)}
+                                    defaultValues={{}}
+                                    valueItems={availableModifiers.map(mid => ({id: mid, name: mid}))}
+                                    defaultFlags={{}}
+                                    flagItems={availableFlags.map(fid => ({id: fid, name: fid}))}
+                                    onChange={(...args) => console.log(args)}
                                 />
                             </Stack>
                         ))}
