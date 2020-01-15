@@ -1,29 +1,11 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import { initializeIcons, Stack, CommandBar } from 'office-ui-fabric-react';
-import { ItemDescriptor } from './components/ItemEditor';
 import { CardEditorPanel } from './components/CardEditorPanel';
 
 initializeIcons();
 
-const stringToItemDescriptor = (value: string): ItemDescriptor => ({
-    name: value,
-    id: value.toLowerCase().replace(/\s+/g, '-')
-})
-
 export const App: React.FunctionComponent = () => {
-    const availableActions: ItemDescriptor[] = [
-        "Left",
-        "Right",
-    ].map(stringToItemDescriptor);
-    const availableModifiers: ItemDescriptor[] = [
-        "Environment",
-        "People",
-        "Security",
-        "Money"
-    ].map(stringToItemDescriptor);
-    const availableFlags: ItemDescriptor[] = [
-        "Introduction Complete",
-    ].map(stringToItemDescriptor);
+    
     return (
         <div>
             <CommandBar
@@ -64,11 +46,7 @@ export const App: React.FunctionComponent = () => {
             />
             <Stack tokens={{padding: 20}} horizontalAlign="center">
                 <div style={{background: "#fff", width: "100%", maxWidth: 900, padding: 40}}>
-                <CardEditorPanel
-                    availableActions={availableActions}
-                    availableFlags={availableFlags}
-                    availableModifiers={availableModifiers}
-                />
+                <CardEditorPanel />
                 </div>
             </Stack>
         </div>
