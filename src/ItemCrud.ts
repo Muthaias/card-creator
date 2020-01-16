@@ -18,7 +18,7 @@ export function createtInitialCrudContext<T>(items: T[]) {
 }
 
 export function createItemCrud<T extends Identity> (items: T[], listener?: () => void): CrudContext<T> & {listener?: () => void} {
-    return {
+    const itemCrud: CrudContext<T> & {listener?: () => void} = {
         items: items,
         update: function (item) {
             const currentItem = this.items.find(i => i.id === item.id);
@@ -35,6 +35,11 @@ export function createItemCrud<T extends Identity> (items: T[], listener?: () =>
         },
         listener: listener
     }
+    itemCrud.update = itemCrud.update.bind(itemCrud);
+    itemCrud.add = itemCrud.add.bind(itemCrud);
+    itemCrud.remove = itemCrud.remove.bind(itemCrud);
+
+    return itemCrud;
 }
 
 export function useItemCrud<T extends Identity>(initialItems: T[]): CrudContext<T> & {listener?: () => void} {

@@ -1,8 +1,9 @@
 import React from 'react';
 import { initializeIcons, Stack, CommandBar, BaseButton, Breadcrumb } from 'office-ui-fabric-react';
 import { CardEditorPanel } from './components/CardEditorPanel';
-import { ImagesContext, RouteManager } from './Contexts';
-import { ImageDescriptor } from './Types'
+import { ParameterEditorPanel } from './components/ParameterEditorPanel';
+import { ImagesContext, ParametersContext, RouteManager } from './Contexts';
+import { ImageDescriptor, ParameterDescriptor, ParameterType } from './Types'
 import { useItemCrud, useManager } from './ItemCrud';
 
 initializeIcons();
@@ -47,6 +48,14 @@ export const App: React.FunctionComponent = () => {
             name: src,
             tags: ["Animals", "Cool stuff"],
         }))
+    );
+    const parameters = useItemCrud<ParameterDescriptor>(
+        [
+            'Environment',
+            'People',
+            'Security',
+            'Money'
+        ].map(name => ({id: name.toLowerCase().replace(/\s+/g, '-'), name: name, type: ParameterType.Value})),
     );
     const routeManager: RouteManager = useManager<RouteManager>(
         createRouteManager(["Card", "Test"])
@@ -101,6 +110,11 @@ export const App: React.FunctionComponent = () => {
                 ]}
             />
             <Stack tokens={{padding: 20}} horizontalAlign="center">
+                <ParametersContext.Provider value={parameters}>
+                    <div style={{background: "#fff", width: "100%", maxWidth: 900, padding: "10px 40px"}}>
+                        <ParameterEditorPanel />
+                    </div>
+                </ParametersContext.Provider>
                 <ImagesContext.Provider value={images}>
                     <div style={{background: "#fff", width: "100%", maxWidth: 900, padding: "10px 40px"}}>
                         <Breadcrumb items={routeItems}/>
