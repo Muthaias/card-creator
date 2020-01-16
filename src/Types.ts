@@ -27,9 +27,10 @@ export type ParameterDescriptor = NamedIdentity & {
 export type CardDescriptor = NamedIdentity & {
     imageId: string;
     conditions: {
+        weight: number;
         values: Parameters<[number, number]>;
         flags: Parameters<boolean>;
-    }
+    }[];
     actions: ActionData[];
 }
 

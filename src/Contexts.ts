@@ -1,41 +1,30 @@
 import React from 'react';
 import {
-    Identity,
     ImageDescriptor,
     ActionDescriptor,
     ParameterDescriptor,
     ParameterType,
     CardDescriptor
 } from './Types';
+import {
+    CrudContext,
+    createtInitialCrudContext,
+} from './ItemCrud';
 
-type CrudContext<T> = {
-    items: T[];
-    update: (item: Identity & Partial<T>) => void;
-    add: (item: T) => void;
-    remove: (item: Identity) => void;
-}
-function getInitialCrudContext<T>(items: T[]) {
-    return {
-        items: items,
-        update: () => {},
-        add: () => {},
-        remove: () => {},
-    };
-}
 
 export const ActionsContext = React.createContext<CrudContext<ActionDescriptor>>(
-    getInitialCrudContext(
-        ['Left', 'Right'].map(name => ({id: name.toLowerCase(), name: name}))
+    createtInitialCrudContext(
+        ['Left', 'Right', 'Star'].map(name => ({id: name.toLowerCase(), name: name}))
     )
 );
 export const ImagesContext = React.createContext<CrudContext<ImageDescriptor>>(
-    getInitialCrudContext([])
+    createtInitialCrudContext([])
 );
 export const CardsContext = React.createContext<CrudContext<CardDescriptor>>(
-    getInitialCrudContext([])
+    createtInitialCrudContext([])
 );
 export const ParametersContext = React.createContext<CrudContext<ParameterDescriptor>>(
-    getInitialCrudContext([
+    createtInitialCrudContext([
         ...[
             'Environment',
             'People',
