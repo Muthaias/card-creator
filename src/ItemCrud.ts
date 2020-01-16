@@ -43,8 +43,8 @@ export function useItemCrud<T extends Identity>(initialItems: T[]): CrudContext<
     );
     useEffect(() => {
         if (!items.listener) {
-            items.listener = () => {
-                setItems(Object.assign({}, items));
+            items.listener = function () {
+                setItems(Object.assign({}, this));
             }
             setItems(Object.assign({}, items));
         }
@@ -58,8 +58,8 @@ export function useManager<M>(initialManager: M & {listener?: (manager: M) => vo
     );
     useEffect(() => {
         if (!manager.listener) {
-            manager.listener = (manager) => {
-                setManager(Object.assign({}, manager));
+            manager.listener = function () {
+                setManager(Object.assign({}, this));
             }
             setManager(Object.assign({}, manager));
         }
