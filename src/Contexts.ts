@@ -4,7 +4,8 @@ import {
     ActionDescriptor,
     ParameterDescriptor,
     ParameterType,
-    CardDescriptor
+    CardDescriptor,
+    Identity,
 } from './Types';
 import {
     CrudContext,
@@ -38,8 +39,28 @@ export const ParametersContext = React.createContext<CrudContext<ParameterDescri
 );
 export const CardEditorContext = React.createContext<{
     cardId: string | null,
-    setCard: (cardId: string) => void,
+    setCard: (card: Identity) => void,
 }>({
     cardId: null,
     setCard: () => {}
+});
+
+export type RouteManager = {
+    route: string[];
+    viewCard: (card: Identity) => void;
+    viewAnalyzeCards: () => void;
+    viewParameterList: () => void;
+    viewCardList: () => void;
+    viewImageList: () => void;
+    viewActionList: () => void;
+};
+
+export const RouteContext = React.createContext<RouteManager>({
+    route: [""],
+    viewCard: () => {},
+    viewAnalyzeCards: () => {},
+    viewParameterList: () => {},
+    viewCardList: () => {},
+    viewImageList: () => {},
+    viewActionList: () => {},
 });

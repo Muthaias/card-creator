@@ -1,11 +1,39 @@
-import React, {useState, useEffect} from 'react';
-import { initializeIcons, Stack, CommandBar, BaseButton } from 'office-ui-fabric-react';
+import React from 'react';
+import { initializeIcons, Stack, CommandBar, BaseButton, Breadcrumb } from 'office-ui-fabric-react';
 import { CardEditorPanel } from './components/CardEditorPanel';
-import { ImagesContext } from './Contexts';
+import { ImagesContext, RouteManager } from './Contexts';
 import { ImageDescriptor } from './Types'
-import { useItemCrud } from './ItemCrud';
+import { useItemCrud, useManager } from './ItemCrud';
 
 initializeIcons();
+
+function createRouteManager(initialRoute: string[]): RouteManager & {listener?: (manager: RouteManager) => void, setRoute: (route: string[]) => void} {
+    return {
+        route: initialRoute,
+        viewCard: function (card) {
+            this.setRoute(["Card", card.id]);
+        },
+        viewAnalyzeCards: function () {
+            this.setRoute(["Cards", "Analyze"]);
+        },
+        viewParameterList: function () {
+            this.setRoute(["Parameters", "View"]);
+        },
+        viewCardList: function () {
+            this.setRoute(["Cards", "View"]);
+        },
+        viewImageList: function () {
+            this.setRoute(["Images", "View"]);
+        },
+        viewActionList: function () {
+            this.setRoute(["Actions", "View"]);
+        },
+        setRoute: function (route: string[]) {
+            this.route = route;
+            if (this.listener) this.listener(this);
+        }
+    }
+}
 
 export const App: React.FunctionComponent = () => {
     const images = useItemCrud<ImageDescriptor>(
@@ -20,6 +48,13 @@ export const App: React.FunctionComponent = () => {
             tags: ["Animals", "Cool stuff"],
         }))
     );
+    const routeManager: RouteManager = useManager<RouteManager>(
+        createRouteManager(["Card", "Test"])
+    );
+    const routeItems = routeManager.route.map(rid => ({
+        key: rid,
+        text: rid,
+    }));
     
     return (
         <div>
@@ -35,34 +70,40 @@ export const App: React.FunctionComponent = () => {
                         text: 'New Card',
                         onClick: () => console.log('New Card')
                     },
+                    {
+                        key: 'add-image',
+                        text: 'Add Image',
+                        onClick: () => {
+                            images.add({
+                                id: 'image-' + Date.now(),
+                                name: 'Name: ' + Date.now(),
+                                src: "", tags: []
+                            });
+                        }
+                    },
                 ]}
                 farItems={[
                     {
                         key: 'card-list',
                         text: 'View Card List',
-                        onClick: () => console.log('View Card List')
+                        onClick: () => routeManager.viewCardList()
                     },
                     {
-                        key: 'modifier-list',
-                        text: 'View Modifier List',
-                        onClick: () => console.log('View Modifier List')
-                    },
-                    {
-                        key: 'flag-list',
-                        text: 'View Flag List',
-                        onClick: () => console.log('View Flag List')
+                        key: 'parameter-list',
+                        text: 'View Parameter List',
+                        onClick: () => routeManager.viewParameterList()
                     },
                     {
                         key: 'analyze-card-stack',
                         text: 'Analyze Card Stack',
-                        onClick: () => console.log('Analyze Card Stack')
+                        onClick: () => routeManager.viewAnalyzeCards()
                     }
                 ]}
             />
-            <BaseButton onClick={() => {images.add({id: 'image-' + Date.now(), name: 'Name: ' + Date.now(), src: "", tags: []})}}>Add Image</BaseButton>
             <Stack tokens={{padding: 20}} horizontalAlign="center">
                 <ImagesContext.Provider value={images}>
-                    <div style={{background: "#fff", width: "100%", maxWidth: 900, padding: 40}}>
+                    <div style={{background: "#fff", width: "100%", maxWidth: 900, padding: "10px 40px"}}>
+                        <Breadcrumb items={routeItems}/>
                         <CardEditorPanel />
                     </div>
                 </ImagesContext.Provider>

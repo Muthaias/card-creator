@@ -38,16 +38,31 @@ export function createItemCrud<T extends Identity> (items: T[], listener?: () =>
 }
 
 export function useItemCrud<T extends Identity>(initialItems: T[]): CrudContext<T> & {listener?: () => void} {
-    const [items, setImages] = useState(
+    const [items, setItems] = useState(
         createItemCrud<T>(initialItems)
     );
     useEffect(() => {
         if (!items.listener) {
             items.listener = () => {
-                setImages(Object.assign({}, items));
+                setItems(Object.assign({}, items));
             }
-            setImages(Object.assign({}, items));
+            setItems(Object.assign({}, items));
         }
-    }, [items]);
+    }, [items.listener]);
     return items;
+}
+
+export function useManager<M>(initialManager: M & {listener?: (manager: M) => void}): M & {listener?: (manager: M) => void} {
+    const [manager, setManager] = useState(
+        initialManager
+    );
+    useEffect(() => {
+        if (!manager.listener) {
+            manager.listener = (manager) => {
+                setManager(Object.assign({}, manager));
+            }
+            setManager(Object.assign({}, manager));
+        }
+    }, [manager.listener]);
+    return manager;
 }
