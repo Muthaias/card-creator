@@ -47,12 +47,12 @@ export const ParameterEditorCore: React.FunctionComponent<Props> = (props) => {
                                     }
                                 }}
                             />
-                            <IconButton
+                            {!p.systemParameter && <IconButton
                                 iconProps={{iconName: 'Trash'}}
                                 onClick={() => {
                                     onRemove(p);
                                 }}
-                            />
+                            />}
                         </Stack>
                     ))}
                     {parameters.filter(p => p.type === type).length === 0 && <Stack horizontalAlign="center"><Text>No parameters of type '{type}' added</Text></Stack>}

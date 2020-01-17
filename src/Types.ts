@@ -21,7 +21,8 @@ export enum ParameterType {
 }
 
 export type ParameterDescriptor = NamedIdentity & {
-    type: ParameterType
+    type: ParameterType;
+    systemParameter?: true;
 }
 
 export type CardCondition = {

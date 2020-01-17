@@ -70,7 +70,7 @@ export const App: React.FunctionComponent = () => {
             'People',
             'Security',
             'Money'
-        ].map(name => ({id: name.toLowerCase().replace(/\s+/g, '-'), name: name, type: ParameterType.Value})),
+        ].map(name => ({id: name.toLowerCase().replace(/\s+/g, '-'), name: name, type: ParameterType.Value, systemParameter: true})),
     );
     const cards = useItemCrud<CardDescriptor>([
         {
