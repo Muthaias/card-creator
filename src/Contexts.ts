@@ -15,7 +15,7 @@ import {
 
 export const ActionsContext = React.createContext<CrudContext<ActionDescriptor>>(
     createtInitialCrudContext(
-        ['Left', 'Right', 'Star'].map(name => ({id: name.toLowerCase(), name: name}))
+        ['Left', 'Right'].map(name => ({id: name.toLowerCase(), name: name}))
     )
 );
 export const ImagesContext = React.createContext<CrudContext<ImageDescriptor>>(
@@ -37,10 +37,13 @@ export const ParametersContext = React.createContext<CrudContext<ParameterDescri
         ].map(name => ({id: name.toLowerCase().replace(/\s+/g, '-'), name: name, type: ParameterType.Flag}))
     ])
 );
-export const CardEditorContext = React.createContext<{
-    cardId: string | null,
-    setCard: (card: Identity) => void,
-}>({
+
+export type CardEditorManager = {
+    cardId: string | null;
+    setCard: (card: Identity) => void;
+};
+
+export const CardEditorContext = React.createContext<CardEditorManager>({
     cardId: null,
     setCard: () => {}
 });

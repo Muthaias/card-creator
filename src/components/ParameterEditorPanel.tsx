@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Stack, IconButton, TextField, Separator } from 'office-ui-fabric-react';
+import { Stack, IconButton, TextField, Separator, Text } from 'office-ui-fabric-react';
 import { ParameterDescriptor, ParameterType, Identity } from '../Types';
 import { ParametersContext } from '../Contexts';
 import { stackTokens } from '../Styling';
@@ -22,7 +22,7 @@ export const ParameterEditorCore: React.FunctionComponent<Props> = (props) => {
     return (
         <Stack tokens={stackTokens} styles={{root: {width: "100%"}}}>
             {[{name: 'Values', type: ParameterType.Value}, {name: 'Flags', type: ParameterType.Flag}].map(({name, type}) => (
-                <>
+                <React.Fragment key={type}>
                     <Stack horizontal styles={{root: {width: "100%"}}}>
                         <Separator styles={{root: {width: "100%"}}}>{name}</Separator>
                         <IconButton
@@ -55,7 +55,8 @@ export const ParameterEditorCore: React.FunctionComponent<Props> = (props) => {
                             />
                         </Stack>
                     ))}
-                </>
+                    {parameters.filter(p => p.type === type).length === 0 && <Stack horizontalAlign="center"><Text>No parameters of type '{type}' added</Text></Stack>}
+                </React.Fragment>
             ))}
         </Stack>
     );

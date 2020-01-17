@@ -1,9 +1,9 @@
 import React from 'react';
-import { initializeIcons, Stack, CommandBar, BaseButton, Breadcrumb } from 'office-ui-fabric-react';
+import { initializeIcons, Stack, CommandBar, Breadcrumb } from 'office-ui-fabric-react';
 import { CardEditorPanel } from './components/CardEditorPanel';
 import { ParameterEditorPanel } from './components/ParameterEditorPanel';
-import { ImagesContext, ParametersContext, RouteManager } from './Contexts';
-import { ImageDescriptor, ParameterDescriptor, ParameterType } from './Types'
+import { ImagesContext, ParametersContext, CardsContext, RouteManager, CardEditorManager, CardEditorContext } from './Contexts';
+import { CardDescriptor, ImageDescriptor, ParameterDescriptor, ParameterType } from './Types'
 import { useItemCrud, useManager } from './ItemCrud';
 
 initializeIcons();
@@ -36,12 +36,22 @@ function createRouteManager(initialRoute: string[]): RouteManager & {listener?: 
     }
 }
 
+function createCardEditorManager(initialCardId: string | null): CardEditorManager & {listener?: (manager: CardEditorManager) => void} {
+    return {
+        cardId: initialCardId,
+        setCard: function (card) {
+            this.cardId = card.id;
+            if (this.listener) this.listener(this);
+        }
+    }
+}
+
 export const App: React.FunctionComponent = () => {
     const images = useItemCrud<ImageDescriptor>(
         [
-            "Monkey",
-            "Donkey",
-            "Ghost"
+            "https://images.unsplash.com/photo-1558981420-87aa9dad1c89?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=400&h=400&q=40",
+            "https://images.unsplash.com/photo-1579156618335-f6245e05236a?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=400&h=400&q=40",
+            "https://images.unsplash.com/photo-1579278420855-26131e470998?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=400&h=400&q=40"
         ].map(src => ({
             src: src,
             id: src,
@@ -57,6 +67,19 @@ export const App: React.FunctionComponent = () => {
             'Money'
         ].map(name => ({id: name.toLowerCase().replace(/\s+/g, '-'), name: name, type: ParameterType.Value})),
     );
+    const cards = useItemCrud<CardDescriptor>([
+        {
+            id: "initial-card",
+            name: "Initial card",
+            text: "",
+            location: "Close to you",
+            conditions: [],
+            actions: [],
+        }
+    ]);
+    const cardEditorManager: CardEditorManager = useManager<CardEditorManager>(
+        createCardEditorManager(null)
+    )
     const routeManager: RouteManager = useManager<RouteManager>(
         createRouteManager(["Card", "Test"])
     );
@@ -109,19 +132,23 @@ export const App: React.FunctionComponent = () => {
                     }
                 ]}
             />
-            <Stack tokens={{padding: 20}} horizontalAlign="center">
-                <ParametersContext.Provider value={parameters}>
+            <ParametersContext.Provider value={parameters}>
+                <Stack tokens={{padding: 20}} horizontalAlign="center">
                     <div style={{background: "#fff", width: "100%", maxWidth: 900, padding: "10px 40px"}}>
                         <ParameterEditorPanel />
                     </div>
-                </ParametersContext.Provider>
-                <ImagesContext.Provider value={images}>
-                    <div style={{background: "#fff", width: "100%", maxWidth: 900, padding: "10px 40px"}}>
-                        <Breadcrumb items={routeItems}/>
-                        <CardEditorPanel />
-                    </div>
-                </ImagesContext.Provider>
-            </Stack>
+                    <CardEditorContext.Provider value={cardEditorManager}>
+                        <CardsContext.Provider value={cards}>
+                            <ImagesContext.Provider value={images}>
+                                <div style={{background: "#fff", width: "100%", maxWidth: 900, padding: "10px 40px"}}>
+                                    <Breadcrumb items={routeItems}/>
+                                    <CardEditorPanel />
+                                </div>
+                            </ImagesContext.Provider>
+                        </CardsContext.Provider>
+                    </CardEditorContext.Provider>
+                </Stack>
+            </ParametersContext.Provider>
         </div>
     );
 };

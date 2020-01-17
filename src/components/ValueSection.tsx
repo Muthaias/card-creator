@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
     Stack,
     TextField,
@@ -8,6 +8,7 @@ import {
 } from 'office-ui-fabric-react';
 import { stackTokens } from '../Styling';
 import { ItemEditor, ItemDescriptor} from './ItemEditor';
+import { ModifierType } from '../Types';
 
 type Values = {[x: string]: number};
 type Flags = {[x: string]: boolean};
@@ -21,9 +22,9 @@ type ValueSectionProps = {
     flags?: Flags,
     defaultDescription?: string;
     description?: string;
-    defaultLocation?: string;
-    location?: string;
-    onChange?: (description: string, location: string, values: {[id: string]: number}, flags: {[id: string]: boolean}, modifierType: string) => void
+    modifierType?: ModifierType;
+    defaultModifierType?: ModifierType;
+    onChange?: (description: string, values: {[id: string]: number}, flags: {[id: string]: boolean}, modifierType: ModifierType) => void
 };
 
 export const ValueSection: React.FunctionComponent<ValueSectionProps> = (props: ValueSectionProps) => {
@@ -35,49 +36,64 @@ export const ValueSection: React.FunctionComponent<ValueSectionProps> = (props: 
         defaultFlags,
         flags,
         defaultDescription,
+        modifierType,
+        defaultModifierType,
         description,
-        defaultLocation,
-        location,
         onChange
     } = props;
     const [valueState, setValueState] = useState<Values>(values || defaultValues || {});
     const [flagState, setFlagState] = useState<Flags>(flags || defaultFlags || {});
-    const [descriptionState, setDescriptionState] = useState(description || defaultDescription || '');
-    const [locationState, setLocationState] = useState(location || defaultLocation || '');
-    const modifierTypes: ItemDescriptor[] = [
+    const [descriptionState, setDescriptionState] = useState(description || defaultDescription);
+    const modifierTypes: ItemDescriptor<ModifierType>[] = [
         {id: 'add', name: 'Add'},
         {id: 'set', name: 'Set'},
         {id: 'replace', name: 'Replace'}
     ];
-    const [selectedModifierType, setSelectedModifierType] = useState(modifierTypes[0]);
+    const [modifierTypeState, setModifierTypeState] = useState(modifierType || defaultModifierType || 'add');
+
+    const serializedValues = JSON.stringify(values);
+    const serializedValueState = JSON.stringify(valueState);
+    const serializedFlags = JSON.stringify(flags);
+    const serializedFlagState = JSON.stringify(flagState);
 
     useEffect(() => {
         if (values !== undefined) setValueState(values);
-    }, [values]);
+    }, [serializedValues]);
     useEffect(() => {
         if (flags !== undefined) setFlagState(flags);
-    }, [flags]);
+    }, [serializedFlags]);
     useEffect(() => {
         if (description !== undefined) setDescriptionState(description);
     }, [description]);
     useEffect(() => {
-        if (location !== undefined) setLocationState(location);
-    }, [location]);
+        if (modifierType !== undefined) setModifierTypeState(modifierType);
+    }, [modifierType]);
     useEffect(() => {
-        if(onChange !== undefined) onChange(descriptionState, locationState, valueState, flagState, selectedModifierType.id);
-    }, [descriptionState, locationState, valueState, flagState, selectedModifierType.id]);
+        if(
+            onChange !== undefined && (
+                serializedFlagState !== serializedFlags ||
+                serializedValueState !== serializedValues ||
+                descriptionState !== description ||
+                modifierTypeState !== modifierType
+            )
+        ) {
+            onChange(descriptionState || '', valueState, flagState, modifierTypeState);
+        }
+    }, [
+        descriptionState, serializedValueState, serializedFlagState, modifierTypeState,
+        description, serializedValues, serializedFlags, modifierType
+    ]);
 
     return (
         <Stack tokens={stackTokens} horizontalAlign='stretch'>
             <TextField label="Description" value={descriptionState} onChange={(_, value) => value !== undefined && setDescriptionState(value)}/>
-            <TextField label="Location" value={locationState} onChange={(_, value) => value !== undefined && setLocationState(value)}/>
             <Dropdown
                 label='Modifier Type'
                 options={modifierTypes.map(t => ({key: t.id, text: t.name}))}
                 onChange={(_, __, index) => {
-                    if (index !== undefined) setSelectedModifierType(modifierTypes[index]);
+                    if (index !== undefined) setModifierTypeState(modifierTypes[index].id);
                 }}
-                selectedKey={selectedModifierType.id}
+                selectedKey={modifierTypeState}
                 styles={{root: {width: '100%'}}}
             />
             <ItemEditor<number>
@@ -93,7 +109,7 @@ export const ValueSection: React.FunctionComponent<ValueSectionProps> = (props: 
                             onValueChange(item, v);
                         }}
                         label={item.name}
-                        min={selectedModifierType.id === 'set' ? 0 : -100}
+                        min={modifierType === 'set' ? 0 : -100}
                         max={100}
                         step={1}
                         value={value}

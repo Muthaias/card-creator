@@ -6,8 +6,8 @@ import {
 } from 'office-ui-fabric-react';
 import { stackTokens } from '../Styling';
 
-export type ItemDescriptor = {
-    id: string;
+export type ItemDescriptor<T = string> = {
+    id: T;
     name: string;
 };
 
