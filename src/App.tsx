@@ -1,40 +1,12 @@
-import React from 'react';
-import { initializeIcons, Stack, CommandBar, Breadcrumb } from 'office-ui-fabric-react';
+import React, { useMemo, useState } from 'react';
+import { initializeIcons, Stack, CommandBar, Panel } from 'office-ui-fabric-react';
 import { CardEditorPanel } from './components/CardEditorPanel';
 import { ParameterEditorPanel } from './components/ParameterEditorPanel';
-import { ImagesContext, ParametersContext, CardsContext, RouteManager, CardEditorManager, CardEditorContext } from './Contexts';
+import { ImagesContext, ParametersContext, CardsContext, CardEditorManager, CardEditorContext } from './Contexts';
 import { CardDescriptor, ImageDescriptor, ParameterDescriptor, ParameterType } from './Types'
 import { useItemCrud, useManager } from './ItemCrud';
 
 initializeIcons();
-
-function createRouteManager(initialRoute: string[]): RouteManager & {listener?: (manager: RouteManager) => void, setRoute: (route: string[]) => void} {
-    return {
-        route: initialRoute,
-        viewCard: function (card) {
-            this.setRoute(["Card", card.id]);
-        },
-        viewAnalyzeCards: function () {
-            this.setRoute(["Cards", "Analyze"]);
-        },
-        viewParameterList: function () {
-            this.setRoute(["Parameters", "View"]);
-        },
-        viewCardList: function () {
-            this.setRoute(["Cards", "View"]);
-        },
-        viewImageList: function () {
-            this.setRoute(["Images", "View"]);
-        },
-        viewActionList: function () {
-            this.setRoute(["Actions", "View"]);
-        },
-        setRoute: function (route: string[]) {
-            this.route = route;
-            if (this.listener) this.listener(this);
-        }
-    }
-}
 
 function createCardEditorManager(initialCardId: string | null): CardEditorManager & {listener?: (manager: CardEditorManager) => void} {
     return {
@@ -44,6 +16,39 @@ function createCardEditorManager(initialCardId: string | null): CardEditorManage
             if (this.listener) this.listener(this);
         }
     }
+}
+
+function updateUrl(params: URLSearchParams) {
+    const newurl = window.location.protocol + '//' + window.location.host + window.location.pathname + '?' + params.toString();
+    window.history.pushState({path:newurl},'',newurl);
+}
+
+function useNavigation() {
+    const [navState, setNavSate] = useState(window.location.search);
+    const nav = useMemo(() => {
+        const params = new URLSearchParams(navState);
+       
+        const setParam = (id: string, value: string) => {
+            params.set(id, value);
+            updateUrl(params);
+            setNavSate(params.toString());
+        }
+        const unsetParam = (id: string) => {
+            params.delete(id);
+            updateUrl(params);
+            setNavSate(params.toString());
+        }
+        return {
+            viewParametersPanel: () => {
+                setParam('panel', 'parameters');
+            },
+            closePanel: () => {
+                unsetParam('panel');
+            },
+            params: params
+        }
+    }, [navState]);
+    return nav;
 }
 
 export const App: React.FunctionComponent = () => {
@@ -79,15 +84,9 @@ export const App: React.FunctionComponent = () => {
     ]);
     const cardEditorManager: CardEditorManager = useManager<CardEditorManager>(
         createCardEditorManager(null)
-    )
-    const routeManager: RouteManager = useManager<RouteManager>(
-        createRouteManager(["Card", "Test"])
     );
-    const routeItems = routeManager.route.map(rid => ({
-        key: rid,
-        text: rid,
-    }));
-    
+    const nav = useNavigation();
+
     return (
         <div>
             <CommandBar
@@ -118,30 +117,35 @@ export const App: React.FunctionComponent = () => {
                     {
                         key: 'card-list',
                         text: 'View Card List',
-                        onClick: () => routeManager.viewCardList()
+                        onClick: () => {}
                     },
                     {
                         key: 'parameter-list',
                         text: 'View Parameter List',
-                        onClick: () => routeManager.viewParameterList()
+                        onClick: nav.viewParametersPanel
                     },
                     {
                         key: 'analyze-card-stack',
                         text: 'Analyze Card Stack',
-                        onClick: () => routeManager.viewAnalyzeCards()
+                        onClick: () => {}
                     }
                 ]}
             />
             <ParametersContext.Provider value={parameters}>
                 <Stack tokens={{padding: 20}} horizontalAlign="center">
-                    <div style={{background: "#fff", width: "100%", maxWidth: 900, padding: "10px 40px"}}>
+                    <Panel
+                        headerText="Parameter Editor"
+                        isOpen={nav.params.get('panel') === 'parameters'}
+                        onDismiss={() => nav.closePanel()}
+                        closeButtonAriaLabel="Close"
+                        isBlocking={false}
+                    >
                         <ParameterEditorPanel />
-                    </div>
+                    </Panel>
                     <CardEditorContext.Provider value={cardEditorManager}>
                         <CardsContext.Provider value={cards}>
                             <ImagesContext.Provider value={images}>
                                 <div style={{background: "#fff", width: "100%", maxWidth: 900, padding: "10px 40px"}}>
-                                    <Breadcrumb items={routeItems}/>
                                     <CardEditorPanel />
                                 </div>
                             </ImagesContext.Provider>

@@ -63,6 +63,12 @@ export const CardEditorCore: React.FunctionComponent<Props> = ({
         });
     }
 
+    const removeCondition = (index: number) => {
+        updateCard({
+            conditions: card.conditions.splice(index),
+        });
+    }
+
     const updateAction = (actionData: ActionData) => {
         updateCard({
             actions: [
@@ -123,26 +129,32 @@ export const CardEditorCore: React.FunctionComponent<Props> = ({
             </Stack>
             {card.conditions.length === 0 && <Stack horizontalAlign="center"><Text>No conditions added</Text></Stack>}
             {card.conditions.map((condition, index) => (
-                <Stack key={index}>
-                    <Slider label="Weight" value={condition.weight} onChange={(value) => updateCondition(index, {
-                        weight: value,
-                        values: condition.values,
-                        flags: condition.flags,
-                    })}/>
-                    <ItemEditor<[number, number]>
-                        items={availableModifiers}
-                        label={"Select Conditions"}
-                        defaultItemValue={[0, 100]}
-                        onRender={(item, value, onValueChange) => (
-                            <Range
-                                label={item.name}
-                                min={0}
-                                max={100}
-                                value={value}
-                                onChange={(v: [number, number]) => onValueChange(item, v)}
-                                styles={{root: {width: '100%'}}}
-                            />
-                        )}
+                <Stack horizontal key={index} verticalAlign="center" tokens={stackTokens}>
+                    <Stack styles={{root: {width: '100%'}}}>
+                        <Slider label="Weight" value={condition.weight} onChange={(value) => updateCondition(index, {
+                            weight: value,
+                            values: condition.values,
+                            flags: condition.flags,
+                        })}/>
+                        <ItemEditor<[number, number]>
+                            items={availableModifiers}
+                            label={"Select Conditions"}
+                            defaultItemValue={[0, 100]}
+                            onRender={(item, value, onValueChange) => (
+                                <Range
+                                    label={item.name}
+                                    min={0}
+                                    max={100}
+                                    value={value}
+                                    onChange={(v: [number, number]) => onValueChange(item, v)}
+                                    styles={{root: {width: '100%'}}}
+                                />
+                            )}
+                        />
+                    </Stack>
+                    <IconButton
+                        iconProps={{iconName: 'Trash'}}
+                        onClick={() => removeCondition(index)}
                     />
                 </Stack>
             ))}
@@ -200,11 +212,9 @@ export const CardEditorPanel = () => {
             onChange={c => {
                 if (currentCard) {
                     cards.update(c);
-                    console.log("update:", cardId, c);
                 } else if (cardId === null) {
                     cardEditorManager.setCard(c);
                     cards.add(c);
-                    console.log("add:", cardId, c);
                 }
             }}
             card={currentCard}
