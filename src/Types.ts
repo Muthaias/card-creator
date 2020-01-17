@@ -1,6 +1,5 @@
 export type Identity = {
     id: string;
-    name: string;
 }
 
 export type NamedIdentity = Identity & {

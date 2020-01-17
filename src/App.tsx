@@ -1,9 +1,10 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { initializeIcons, Stack, CommandBar, Panel } from 'office-ui-fabric-react';
 import { CardEditorPanel } from './components/CardEditorPanel';
 import { ParameterEditorPanel } from './components/ParameterEditorPanel';
+import { CardListPanel } from './components/CardListPanel';
 import { ImagesContext, ParametersContext, CardsContext, CardEditorManager, CardEditorContext } from './Contexts';
-import { CardDescriptor, ImageDescriptor, ParameterDescriptor, ParameterType } from './Types'
+import { CardDescriptor, ImageDescriptor, ParameterDescriptor, ParameterType, Identity } from './Types'
 import { useItemCrud, useManager } from './ItemCrud';
 
 initializeIcons();
@@ -12,7 +13,7 @@ function createCardEditorManager(initialCardId: string | null): CardEditorManage
     return {
         cardId: initialCardId,
         setCard: function (card) {
-            this.cardId = card.id;
+            this.cardId = card ? card.id : null;
             if (this.listener) this.listener(this);
         }
     }
@@ -39,13 +40,16 @@ function useNavigation() {
             setNavSate(params.toString());
         }
         return {
-            viewParametersPanel: () => {
-                setParam('panel', 'parameters');
-            },
+            viewParametersPanel: () => setParam('panel', 'parameters'),
+            viewCardList: () => setParam('panel', 'cards'),
+            editCard: (card: Identity) => setParam('cardId', card.id),
+            newCard: () => unsetParam('cardId'),
             closePanel: () => {
                 unsetParam('panel');
             },
-            params: params
+            params: params,
+            cardId: params.get('cardId'),
+            panel: params.get('panel'),
         }
     }, [navState]);
     return nav;
@@ -61,7 +65,7 @@ export const App: React.FunctionComponent = () => {
             src: src,
             id: src,
             name: src,
-            tags: ["Animals", "Cool stuff"],
+            tags: [],
         }))
     );
     const parameters = useItemCrud<ParameterDescriptor>(
@@ -72,52 +76,51 @@ export const App: React.FunctionComponent = () => {
             'Money'
         ].map(name => ({id: name.toLowerCase().replace(/\s+/g, '-'), name: name, type: ParameterType.Value, systemParameter: true})),
     );
-    const cards = useItemCrud<CardDescriptor>([
-        {
-            id: "initial-card",
-            name: "Initial card",
-            text: "",
-            location: "Close to you",
-            conditions: [],
-            actions: [],
-        }
-    ]);
+    const cards = useItemCrud<CardDescriptor>([]);
     const cardEditorManager: CardEditorManager = useManager<CardEditorManager>(
         createCardEditorManager(null)
     );
     const nav = useNavigation();
+
+    const panelId = nav.params.get("panel");
+    const panelContent = panelId !== null && {
+        parameters: {
+            title: "Parameter Editor",
+            content: <ParameterEditorPanel />,
+        },
+        cards: {
+            title: "Card List",
+            content: <CardListPanel onCardSelected={(c) => nav.editCard(c)}/>
+        }
+    }[panelId as ('parameters' | 'cards')];
+
+    useEffect(() => {
+        cardEditorManager.setCard(nav.cardId ? {id: nav.cardId} : null);
+    }, [nav.cardId]);
+    useEffect(() => {
+        const cardId = cardEditorManager.cardId;
+        if (cardId) {
+            nav.editCard({id: cardId});
+        } else {
+            nav.newCard();
+        }
+    }, [cardEditorManager.cardId]);
 
     return (
         <div>
             <CommandBar
                 items={[
                     {
-                        key: 'save-card',
-                        text: 'Save Card',
-                        onClick: () => console.log('Save Card')
-                    },
-                    {
                         key: 'new-card',
                         text: 'New Card',
-                        onClick: () => console.log('New Card')
-                    },
-                    {
-                        key: 'add-image',
-                        text: 'Add Image',
-                        onClick: () => {
-                            images.add({
-                                id: 'image-' + Date.now(),
-                                name: 'Name: ' + Date.now(),
-                                src: "", tags: []
-                            });
-                        }
+                        onClick: nav.newCard
                     },
                 ]}
                 farItems={[
                     {
                         key: 'card-list',
                         text: 'View Card List',
-                        onClick: () => {}
+                        onClick: nav.viewCardList
                     },
                     {
                         key: 'parameter-list',
@@ -132,26 +135,26 @@ export const App: React.FunctionComponent = () => {
                 ]}
             />
             <ParametersContext.Provider value={parameters}>
-                <Stack tokens={{padding: 20}} horizontalAlign="center">
-                    <Panel
-                        headerText="Parameter Editor"
-                        isOpen={nav.params.get('panel') === 'parameters'}
-                        onDismiss={() => nav.closePanel()}
-                        closeButtonAriaLabel="Close"
-                        isBlocking={false}
-                    >
-                        <ParameterEditorPanel />
-                    </Panel>
-                    <CardEditorContext.Provider value={cardEditorManager}>
-                        <CardsContext.Provider value={cards}>
-                            <ImagesContext.Provider value={images}>
+                <CardsContext.Provider value={cards}>
+                    <ImagesContext.Provider value={images}>
+                        <Stack tokens={{padding: 20}} horizontalAlign="center">
+                            <Panel
+                                headerText={panelContent ? panelContent.title : ''}
+                                isOpen={!!panelContent}
+                                onDismiss={() => nav.closePanel()}
+                                closeButtonAriaLabel="Close"
+                                isBlocking={false}
+                            >
+                                {panelContent && panelContent.content}
+                            </Panel>
+                            <CardEditorContext.Provider value={cardEditorManager}>
                                 <div style={{background: "#fff", width: "100%", maxWidth: 900, padding: "10px 40px"}}>
                                     <CardEditorPanel />
                                 </div>
-                            </ImagesContext.Provider>
-                        </CardsContext.Provider>
-                    </CardEditorContext.Provider>
-                </Stack>
+                            </CardEditorContext.Provider>
+                        </Stack>
+                    </ImagesContext.Provider>
+                </CardsContext.Provider>
             </ParametersContext.Provider>
         </div>
     );

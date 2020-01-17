@@ -40,7 +40,7 @@ export const ParametersContext = React.createContext<CrudContext<ParameterDescri
 
 export type CardEditorManager = {
     cardId: string | null;
-    setCard: (card: Identity) => void;
+    setCard: (card: Identity | null) => void;
 };
 
 export const CardEditorContext = React.createContext<CardEditorManager>({

@@ -128,7 +128,7 @@ export const CardEditorCore: React.FunctionComponent<Props> = ({
                 />
             </Stack>
             {card.conditions.length === 0 && <Stack horizontalAlign="center"><Text>No conditions added</Text></Stack>}
-            {card.conditions.map((condition, index) => (
+            {card.conditions.map((condition, index, conditions) => (
                 <Stack horizontal key={index} verticalAlign="center" tokens={stackTokens}>
                     <Stack styles={{root: {width: '100%'}}}>
                         <Slider label="Weight" value={condition.weight} onChange={(value) => updateCondition(index, {
@@ -151,7 +151,9 @@ export const CardEditorCore: React.FunctionComponent<Props> = ({
                                 />
                             )}
                         />
+                        {index !== conditions.length - 1 && <Separator />}
                     </Stack>
+                    <Separator vertical/>
                     <IconButton
                         iconProps={{iconName: 'Trash'}}
                         onClick={() => removeCondition(index)}
