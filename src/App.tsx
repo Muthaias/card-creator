@@ -55,9 +55,23 @@ function useNavigation() {
     return nav;
 }
 
+function getData<T>(id: string): T | null {
+    const blob = window.localStorage.getItem(id);
+    try {
+        return blob && JSON.parse(blob);
+    } catch (_) {
+        return null;
+    }
+}
+
+function setData<T>(id: string, data: T) {
+    const blob = JSON.stringify(data);
+    window.localStorage.setItem(id, blob);
+}
+
 export const App: React.FunctionComponent = () => {
     const images = useItemCrud<ImageDescriptor>(
-        [
+        getData('images') || [
             "https://images.unsplash.com/photo-1558981420-87aa9dad1c89?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=400&h=400&q=40",
             "https://images.unsplash.com/photo-1579156618335-f6245e05236a?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=400&h=400&q=40",
             "https://images.unsplash.com/photo-1579278420855-26131e470998?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=400&h=400&q=40"
@@ -66,17 +80,22 @@ export const App: React.FunctionComponent = () => {
             id: src,
             name: src,
             tags: [],
-        }))
+        })),
+        (items) => setData('images', items),
     );
     const parameters = useItemCrud<ParameterDescriptor>(
-        [
+        getData('parameters') || [
             'Environment',
             'People',
             'Security',
             'Money'
         ].map(name => ({id: name.toLowerCase().replace(/\s+/g, '-'), name: name, type: ParameterType.Value, systemParameter: true})),
+        (items) => setData('parameters', items)
     );
-    const cards = useItemCrud<CardDescriptor>([]);
+    const cards = useItemCrud<CardDescriptor>(
+        getData('cards') || [],
+        (items) => setData('cards', items),
+    );
     const cardEditorManager: CardEditorManager = useManager<CardEditorManager>(
         createCardEditorManager(null)
     );

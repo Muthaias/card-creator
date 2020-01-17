@@ -42,7 +42,7 @@ export function createItemCrud<T extends Identity> (items: T[], listener?: () =>
     return itemCrud;
 }
 
-export function useItemCrud<T extends Identity>(initialItems: T[]): CrudContext<T> & {listener?: () => void} {
+export function useItemCrud<T extends Identity>(initialItems: T[], itemListener?: (items: T[]) => void): CrudContext<T> & {listener?: () => void} {
     const [items, setItems] = useState(
         createItemCrud<T>(initialItems)
     );
@@ -50,6 +50,7 @@ export function useItemCrud<T extends Identity>(initialItems: T[]): CrudContext<
         if (!items.listener) {
             items.listener = function () {
                 setItems(Object.assign({}, this));
+                if (itemListener) itemListener(this.items);
             }
             setItems(Object.assign({}, items));
         }
