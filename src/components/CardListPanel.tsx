@@ -20,7 +20,7 @@ export const CardListPanelCore: React.FunctionComponent<Props> = (props) => {
             <Separator>Cards</Separator>
             {cards.map(c => (
                 <DocumentCard key={c.id} type={DocumentCardType.compact} onClick={() => onCardSelected(c)}>
-                    <DocumentCardPreview previewImages={[{previewImageSrc: c.imageSrc}]} />
+                    <DocumentCardPreview previewImages={[{previewImageSrc: c.imageSrc, width: 144}]} />
                     <DocumentCardDetails>
                         <DocumentCardTitle title={c.name} />
                     </DocumentCardDetails>
