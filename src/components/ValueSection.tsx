@@ -1,15 +1,15 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React from 'react';
 import {
     Stack,
     TextField,
     Dropdown,
     Slider,
     Toggle,
-    updateA,
 } from 'office-ui-fabric-react';
 import { stackTokens } from '../Styling';
 import { ItemEditor, ItemDescriptor} from './ItemEditor';
 import { ModifierType } from '../Types';
+import { useLazyUpdate } from '../LazyUpdate';
 
 type Values = {[x: string]: number};
 type Flags = {[x: string]: boolean};
@@ -111,32 +111,15 @@ export const ValueSection: React.FunctionComponent<ValueSectionProps> = (props: 
 }
 
 export const LazyValueSection: React.FunctionComponent<ValueSectionProps> = (props) => {
-    const propData = {
+    const onChange = props.onChange;
+    const [state, setState] = useLazyUpdate({
         description: props.description,
         values: props.values,
         flags: props.flags,
         modifierType: props.modifierType,
-    };
-    const [state, setState] = useState(propData);
-
-    const serializedState = JSON.stringify(state);
-    const serializedPropData = JSON.stringify(propData);
-    useEffect(() => {
-        const onChange = props.onChange;
-        if (serializedState !== serializedPropData && onChange) {
-            const timer = setTimeout(() => {
-                if (onChange) onChange(state.description, state.values, state.flags, state.modifierType);
-            }, 1000);
-            return () => {
-                clearTimeout(timer);
-            }
-        }
-    }, [serializedState]);
-    useEffect(() => {
-        if (serializedState !== serializedPropData) {
-            setState(propData);
-        }
-    }, [serializedPropData])
+    }, onChange && ((state) => {
+        onChange(state.description, state.values, state.flags, state.modifierType)
+    }));
 
     return (
         <ValueSection {...props} {...state} onChange={(d, v, f, m) => setState({

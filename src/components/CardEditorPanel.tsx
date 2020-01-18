@@ -1,7 +1,7 @@
 import React, {useContext} from 'react';
 import { Stack, Text, Slider, TextField, Dropdown, Image, Separator, IconButton } from 'office-ui-fabric-react';
 import { LazyValueSection } from './ValueSection';
-import { ItemEditor, ItemDescriptor } from './ItemEditor';
+import { LazyItemEditor, ItemDescriptor } from './ItemEditor';
 import { Range } from './Range';
 import { stackTokens } from '../Styling';
 import {
@@ -136,7 +136,7 @@ export const CardEditorCore: React.FunctionComponent<Props> = ({
                             values: condition.values,
                             flags: condition.flags,
                         })}/>
-                        <ItemEditor<[number, number]>
+                        <LazyItemEditor<[number, number]>
                             items={availableModifiers}
                             values={condition.values}
                             label={"Select Conditions"}

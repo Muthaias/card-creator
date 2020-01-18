@@ -1,10 +1,11 @@
-import React, { useReducer, useEffect } from 'react';
+import React from 'react';
 import {
     Stack,
     IconButton,
     Dropdown,
 } from 'office-ui-fabric-react';
 import { stackTokens } from '../Styling';
+import { useLazyUpdate } from '../LazyUpdate';
 
 export type ItemDescriptor<T = string> = {
     id: T;
@@ -101,4 +102,20 @@ export function ItemEditor<T = number>(props: ItemEditorProps<T>) {
             ))}
         </>
     );
+}
+
+
+
+export function LazyItemEditor<T = number>(props: ItemEditorProps<T>) {
+    const onChange = props.onChange;
+    const [state, setState] = useLazyUpdate(
+        props.values,
+        onChange && ((values) => {
+            onChange(values)
+        })
+    );
+
+    return (
+        <ItemEditor {...props} values={state} onChange={setState}/>
+    )
 }
