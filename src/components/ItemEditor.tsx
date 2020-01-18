@@ -17,10 +17,6 @@ type ValueContentActions<T> = (
     {type: 'unset', id: string} |
     {type: 'update', values: {[x: string]: T}}
 );
-type ValueContentReducer<T = number> = (
-    state: ValueContentState<T>,
-    action: ValueContentActions<T>
-) => ValueContentState<T>;
 
 function valueContentReducer<T = number>(
     state: ValueContentState<T>,
@@ -53,22 +49,16 @@ type ItemEditorProps<T = number> = {
 
 export function ItemEditor<T = number>(props: ItemEditorProps<T>) {
     const {items, values, defaultItemValue, label, onChange, onRender} = props;
-    const [itemContent, dispatchItemContent] = useReducer<ValueContentReducer<T>>(
-        valueContentReducer,
-        values
-    );
-    const active = items.filter(i => itemContent[i.id] !== undefined);
-    const unused = items.filter(i => itemContent[i.id] === undefined);
+    const active = items.filter(i => values[i.id] !== undefined);
+    const unused = items.filter(i => values[i.id] === undefined);
     
-    const setContent = (valueId: string, value: T) => dispatchItemContent({type: 'set', id: valueId, value: value});
-    const unsetContent = (valueId: string) => dispatchItemContent({type: 'unset', id: valueId});
+    const setContent = (valueId: string, value: T) => {
+        if (onChange) onChange(valueContentReducer(values, {type: 'set', id: valueId, value: value}));
+    };
     
-    useEffect(() => {
-        if(onChange !== undefined) onChange(itemContent);
-    }, [JSON.stringify(itemContent)]);
-    useEffect(() => {
-        if (values !== undefined) dispatchItemContent({type: 'update', values: values});
-    }, [values]);
+    const unsetContent = (valueId: string) => {
+        if (onChange) onChange(valueContentReducer(values, {type: 'unset', id: valueId}));
+    };
 
     return (
         <>
@@ -98,7 +88,7 @@ export function ItemEditor<T = number>(props: ItemEditorProps<T>) {
             </Stack>
             {active.map(item => (
                 <Stack key={item.id} tokens={stackTokens} horizontal horizontalAlign='stretch' verticalAlign='end'>
-                {onRender(item, itemContent[item.id], (i, v) => {
+                {onRender(item, values[item.id], (i, v) => {
                     setContent(i.id, v);
                 })}
                 <IconButton
