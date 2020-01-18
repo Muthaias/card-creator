@@ -1,5 +1,5 @@
 import React, {useContext} from 'react';
-import { Stack, Text, Slider, TextField, ITextFieldProps, Dropdown, Image, Separator, IconButton } from 'office-ui-fabric-react';
+import { Stack, Text, Slider, TextField, ITextFieldProps, Dropdown, Image, Separator, Toggle, IconButton } from 'office-ui-fabric-react';
 import { LazyValueSection } from './ValueSection';
 import { LazyItemEditor, ItemDescriptor } from './ItemEditor';
 import { Range } from './Range';
@@ -58,9 +58,9 @@ export const CardEditorCore: React.FunctionComponent<Props> = ({
         ]});
     };
 
-    const updateCondition = (index: number, newCondition: CardCondition) => {
+    const updateCondition = (index: number, newCondition: Partial<CardCondition>) => {
         updateCard({
-            conditions: card.conditions.map((c, i) => i === index ? newCondition : c),
+            conditions: card.conditions.map((c, i) => i === index ? Object.assign({}, c, newCondition) : c),
         });
     }
 
@@ -134,18 +134,14 @@ export const CardEditorCore: React.FunctionComponent<Props> = ({
                     <Stack styles={{root: {width: '100%'}}}>
                         <Slider label="Weight" value={condition.weight} onChange={(value) => updateCondition(index, {
                             weight: value,
-                            values: condition.values,
-                            flags: condition.flags,
                         })}/>
                         <LazyItemEditor<[number, number]>
                             items={availableModifiers}
                             values={condition.values}
-                            label={"Select Conditions"}
+                            label={"Select Values"}
                             defaultItemValue={[0, 100]}
                             onChange={(values) => updateCondition(index, {
-                                weight: condition.weight,
                                 values: values,
-                                flags: condition.flags,
                             })}
                             onRender={(item, value, onValueChange) => (
                                 <Range
@@ -154,6 +150,26 @@ export const CardEditorCore: React.FunctionComponent<Props> = ({
                                     max={100}
                                     value={value}
                                     onChange={(v: [number, number]) => onValueChange(item, v)}
+                                    styles={{root: {width: '100%'}}}
+                                />
+                            )}
+                        />
+                        <LazyItemEditor<boolean>
+                            items={availableModifiers}
+                            values={condition.flags}
+                            label={"Select Flags"}
+                            defaultItemValue={true}
+                            onChange={(flags) => updateCondition(index, {
+                                flags: flags,
+                            })}
+                            onRender={(item, value, onValueChange) => (
+                                <Toggle
+                                    key={item.id}
+                                    onChange={(_, v) => {
+                                        if (v !== undefined) onValueChange(item, v);
+                                    }}
+                                    label={item.name}
+                                    checked={value}
                                     styles={{root: {width: '100%'}}}
                                 />
                             )}
