@@ -44,8 +44,7 @@ function valueContentReducer<T = number>(
 
 type ItemEditorProps<T = number> = {
     items: ItemDescriptor[],
-    values?: {[id: string]: T},
-    defaultValues?: {[id: string]: T},
+    values: {[id: string]: T},
     defaultItemValue: T,
     label: string,
     onChange?: (values: {[id: string]: T}) => void,
@@ -53,10 +52,10 @@ type ItemEditorProps<T = number> = {
 }
 
 export function ItemEditor<T = number>(props: ItemEditorProps<T>) {
-    const {items, values, defaultValues, defaultItemValue, label, onChange, onRender} = props;
+    const {items, values, defaultItemValue, label, onChange, onRender} = props;
     const [itemContent, dispatchItemContent] = useReducer<ValueContentReducer<T>>(
         valueContentReducer,
-        values || defaultValues || {}
+        values
     );
     const active = items.filter(i => itemContent[i.id] !== undefined);
     const unused = items.filter(i => itemContent[i.id] === undefined);
@@ -66,7 +65,7 @@ export function ItemEditor<T = number>(props: ItemEditorProps<T>) {
     
     useEffect(() => {
         if(onChange !== undefined) onChange(itemContent);
-    });
+    }, [JSON.stringify(itemContent)]);
     useEffect(() => {
         if (values !== undefined) dispatchItemContent({type: 'update', values: values});
     }, [values]);

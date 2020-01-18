@@ -72,7 +72,7 @@ export const CardEditorCore: React.FunctionComponent<Props> = ({
     const updateAction = (actionData: ActionData) => {
         updateCard({
             actions: [
-                ...card.actions.filter(a => a.actionId === actionData.actionId),
+                ...card.actions.filter(a => a.actionId !== actionData.actionId),
                 actionData,
             ]
         });
@@ -98,7 +98,7 @@ export const CardEditorCore: React.FunctionComponent<Props> = ({
                     <Image width="100%" height="400" src={currentImage === undefined ? "http://placehold.it/400x400" : currentImage.src}/>
                     <Dropdown
                         label="Image"
-                        selectedKey={card.imageId}
+                        selectedKey={card.imageId || null}
                         onChange={(_, __, index) => index !== undefined && updateCard({imageId: availableImages[index].id})}
                         placeholder="Image Select"
                         options={availableImages.map(i => ({key: i.id, text: i.name}))}
@@ -138,8 +138,14 @@ export const CardEditorCore: React.FunctionComponent<Props> = ({
                         })}/>
                         <ItemEditor<[number, number]>
                             items={availableModifiers}
+                            values={condition.values}
                             label={"Select Conditions"}
                             defaultItemValue={[0, 100]}
+                            onChange={(values) => updateCondition(index, {
+                                weight: condition.weight,
+                                values: values,
+                                flags: condition.flags,
+                            })}
                             onRender={(item, value, onValueChange) => (
                                 <Range
                                     label={item.name}
@@ -173,6 +179,7 @@ export const CardEditorCore: React.FunctionComponent<Props> = ({
                         <Stack tokens={stackTokens} key={action.id} horizontalAlign="stretch" styles={{root: {width: "100%"}}}>
                             <Text>Action: {action.name}</Text>
                             <ValueSection
+                                description={actionData.description || ''}
                                 values={actionData.values}
                                 valueItems={availableModifiers}
                                 flags={actionData.flags}
@@ -215,8 +222,8 @@ export const CardEditorPanel = () => {
                 if (currentCard) {
                     cards.update(c);
                 } else if (cardId === null) {
-                    cardEditorManager.setCard(c);
                     cards.add(c);
+                    cardEditorManager.setCard(c);
                 }
             }}
             card={currentCard}

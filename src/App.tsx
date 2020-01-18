@@ -96,10 +96,11 @@ export const App: React.FunctionComponent = () => {
         getData('cards') || [],
         (items) => setData('cards', items),
     );
-    const cardEditorManager: CardEditorManager = useManager<CardEditorManager>(
-        createCardEditorManager(null)
-    );
     const nav = useNavigation();
+    const cardEditorManager: CardEditorManager = useMemo(() => ({
+        cardId: nav.cardId,
+        setCard: (card) => card ? nav.editCard(card) : nav.newCard(),
+    }), [nav.cardId]);
 
     const panelId = nav.params.get("panel");
     const panelContent = panelId !== null && {
@@ -112,18 +113,6 @@ export const App: React.FunctionComponent = () => {
             content: <CardListPanel onCardSelected={(c) => nav.editCard(c)}/>
         }
     }[panelId as ('parameters' | 'cards')];
-
-    useEffect(() => {
-        cardEditorManager.setCard(nav.cardId ? {id: nav.cardId} : null);
-    }, [nav.cardId]);
-    useEffect(() => {
-        const cardId = cardEditorManager.cardId;
-        if (cardId) {
-            nav.editCard({id: cardId});
-        } else {
-            nav.newCard();
-        }
-    }, [cardEditorManager.cardId]);
 
     return (
         <div>
