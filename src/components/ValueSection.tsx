@@ -42,10 +42,10 @@ export const ValueSection: React.FunctionComponent<ValueSectionProps> = (props: 
     ];
     const update = (d?: string, v?: Values, f?: Flags, m?: ModifierType) => {
         if (onChange) onChange(
-            d || description,
-            v || values,
-            f || flags,
-            m || modifierType,
+            d === undefined ? description : d,
+            v === undefined ? values : v,
+            f === undefined ? flags : f,
+            m === undefined ? modifierType : m,
         );
     }
     const setModifierType = (type: ModifierType) => update(undefined, undefined, undefined, type);
