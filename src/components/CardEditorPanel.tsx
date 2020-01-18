@@ -1,5 +1,5 @@
 import React, {useContext} from 'react';
-import { Stack, Text, Slider, TextField, Dropdown, Image, Separator, IconButton } from 'office-ui-fabric-react';
+import { Stack, Text, Slider, TextField, ITextFieldProps, Dropdown, Image, Separator, IconButton } from 'office-ui-fabric-react';
 import { LazyValueSection } from './ValueSection';
 import { LazyItemEditor, ItemDescriptor } from './ItemEditor';
 import { Range } from './Range';
@@ -12,6 +12,7 @@ import {
     CardsContext,
 } from '../Contexts';
 import { ActionDescriptor, ActionData, ParameterDescriptor, ParameterType, CardDescriptor, CardCondition, ImageDescriptor } from '../Types';
+import { useLazyUpdate } from '../LazyUpdate';
 
 type Props = {
     availableModifiers: ItemDescriptor[];
@@ -91,7 +92,7 @@ export const CardEditorCore: React.FunctionComponent<Props> = ({
                 }
             }}
         >
-            <TextField label="Name" value={card.name} styles={{root: {width: "100%"}}} onChange={(_, value) => value !== undefined && updateCard({name: value})}/>
+            <LazyTextField label="Name" value={card.name} styles={{root: {width: "100%"}}} onChange={(_: any, value?: string) => value !== undefined && updateCard({name: value})}/>
             <Separator>Description</Separator>
             <Stack tokens={stackTokens} horizontal horizontalAlign="stretch" styles={{root: {width: "100%"}}}>
                 <Stack tokens={stackTokens} horizontalAlign="stretch" styles={{root: {width: "50%"}}}>
@@ -110,13 +111,13 @@ export const CardEditorCore: React.FunctionComponent<Props> = ({
                         placeholder="Action Urgency"
                         options={["High", "Medium", "Low"].map(t => ({key: t, text: t}))}
                     />
-                    <TextField label="Location" value={card.location} onChange={(_, value) => value !== undefined && updateCard({location: value})}/>
-                    <TextField
+                    <LazyTextField label="Location" value={card.location} onChange={(_: any, value?: string) => value !== undefined && updateCard({location: value})}/>
+                    <LazyTextField
                         label="Text"
                         value={card.text}
                         multiline
                         autoAdjustHeight
-                        onChange={(_, value) => value !== undefined && updateCard({text: value})}
+                        onChange={(_: any, value?: string) => value !== undefined && updateCard({text: value})}
                     />
                 </Stack>
             </Stack>
@@ -228,5 +229,21 @@ export const CardEditorPanel = () => {
             }}
             card={currentCard}
         />
+    )
+}
+
+const LazyTextField: React.FunctionComponent<ITextFieldProps & {onChange: (ev: void, value?: string) => void}> = (props) => {
+    const onChange = props.onChange;
+    const [state, setState] = useLazyUpdate(
+        props.value,
+        onChange && ((value) => {
+            onChange(undefined, value);
+        })
+    );
+
+    return (
+        <TextField {...props} value={state} onChange={(_, value) => {
+            setState(value);
+        }}/>
     )
 }
