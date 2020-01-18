@@ -109,3 +109,41 @@ export const ValueSection: React.FunctionComponent<ValueSectionProps> = (props: 
         </Stack>
     )
 }
+
+export const LazyValueSection: React.FunctionComponent<ValueSectionProps> = (props) => {
+    const propData = {
+        description: props.description,
+        values: props.values,
+        flags: props.flags,
+        modifierType: props.modifierType,
+    };
+    const [state, setState] = useState(propData);
+
+    const serializedState = JSON.stringify(state);
+    const serializedPropData = JSON.stringify(propData);
+    useEffect(() => {
+        const onChange = props.onChange;
+        if (serializedState !== serializedPropData && onChange) {
+            const timer = setTimeout(() => {
+                if (onChange) onChange(state.description, state.values, state.flags, state.modifierType);
+            }, 1000);
+            return () => {
+                clearTimeout(timer);
+            }
+        }
+    }, [serializedState]);
+    useEffect(() => {
+        if (serializedState !== serializedPropData) {
+            setState(propData);
+        }
+    }, [serializedPropData])
+
+    return (
+        <ValueSection {...props} {...state} onChange={(d, v, f, m) => setState({
+            description: d,
+            values: v,
+            flags: f,
+            modifierType: m,
+        })}/>
+    )
+}

@@ -1,6 +1,6 @@
 import React, {useContext} from 'react';
 import { Stack, Text, Slider, TextField, Dropdown, Image, Separator, IconButton } from 'office-ui-fabric-react';
-import { ValueSection } from './ValueSection';
+import { LazyValueSection } from './ValueSection';
 import { ItemEditor, ItemDescriptor } from './ItemEditor';
 import { Range } from './Range';
 import { stackTokens } from '../Styling';
@@ -178,7 +178,7 @@ export const CardEditorCore: React.FunctionComponent<Props> = ({
                     return (
                         <Stack tokens={stackTokens} key={action.id} horizontalAlign="stretch" styles={{root: {width: "100%"}}}>
                             <Text>Action: {action.name}</Text>
-                            <ValueSection
+                            <LazyValueSection
                                 description={actionData.description || ''}
                                 values={actionData.values}
                                 valueItems={availableModifiers}
