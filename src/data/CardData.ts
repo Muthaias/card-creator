@@ -101,7 +101,7 @@ export const imageDescriptors: ImageDescriptor[] = [
         tags: ["money", "people", "environment"]
     })),
 ].map(image => {
-    const src = image.path.replace(/w=\d+/, "w=400&h=400"),;
+    const src = image.path.replace(/w=\d+/, "w=400&h=400");
     const m = src.match(/photo-(\d+-[0-9a-z]+)/);
     const id = m ? m[1] : src;
     return {
