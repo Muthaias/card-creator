@@ -5,7 +5,8 @@ import { ParameterEditorPanel } from './components/ParameterEditorPanel';
 import { CardListPanel } from './components/CardListPanel';
 import { ImagesContext, ParametersContext, CardsContext, CardEditorManager, CardEditorContext } from './Contexts';
 import { CardDescriptor, ImageDescriptor, ParameterDescriptor, ParameterType, Identity } from './Types'
-import { useItemCrud, useManager } from './ItemCrud';
+import { useItemCrud } from './ItemCrud';
+import { imageDescriptors } from './data/CardData';
 
 initializeIcons();
 
@@ -71,16 +72,7 @@ function setData<T>(id: string, data: T) {
 
 export const App: React.FunctionComponent = () => {
     const images = useItemCrud<ImageDescriptor>(
-        getData('images') || [
-            "https://images.unsplash.com/photo-1558981420-87aa9dad1c89?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=400&h=400&q=40",
-            "https://images.unsplash.com/photo-1579156618335-f6245e05236a?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=400&h=400&q=40",
-            "https://images.unsplash.com/photo-1579278420855-26131e470998?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=400&h=400&q=40"
-        ].map(src => ({
-            src: src,
-            id: src,
-            name: src,
-            tags: [],
-        })),
+        getData('images') || imageDescriptors,
         (items) => setData('images', items),
     );
     const parameters = useItemCrud<ParameterDescriptor>(
