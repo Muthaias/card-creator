@@ -1,4 +1,4 @@
-import React, { useContext, useMemo } from 'react';
+import React, { useContext, useMemo, useCallback } from 'react';
 import { Identity, NamedIdentity } from '../Types';
 import { DocumentCardPreview } from 'office-ui-fabric-react';
 import { CardsContext, ImagesContext } from '../Contexts';
@@ -11,10 +11,11 @@ type Props = {
     })[];
     onImageSelected: (card: Identity) => void;
     onAddImage?: () => void;
+    onRemoveImage?: (image: Identity) => void;
 }
 
 export const ImageListPanelCore: React.FunctionComponent<Props> = (props) => {
-    const {images, onImageSelected, onAddImage} = props;
+    const {images, onImageSelected, onAddImage, onRemoveImage} = props;
 
     return (
         <ItemListPanel<{imageSrc: string}>
@@ -24,6 +25,7 @@ export const ImageListPanelCore: React.FunctionComponent<Props> = (props) => {
                 <DocumentCardPreview previewImages={[{previewImageSrc: i.imageSrc, width: 144}]} />
             )}
             items={images}
+            onRemoveItem={onRemoveImage}
             onAddItem={onAddImage}
             onItemSelected={onImageSelected}
         />
@@ -47,11 +49,16 @@ export const ImageListPanel: React.FunctionComponent<ImageListPanelProps> = (pro
         imageSrc: item.src,
     })), [images]);
 
+    const removeImage = useCallback((image: Identity) => {
+        images.remove(image);
+    }, [images]);
+
     return (
         <ImageListPanelCore
             images={imageList}
             onImageSelected={onImageSelected}
             onAddImage={onAddImage}
+            onRemoveImage={removeImage}
         />
     );
 }

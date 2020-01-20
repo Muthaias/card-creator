@@ -1,5 +1,5 @@
-import React, { useMemo, useState, useEffect } from 'react';
-import { initializeIcons, Stack, CommandBar, Panel } from 'office-ui-fabric-react';
+import React, { useMemo, useState } from 'react';
+import { initializeIcons, Stack, CommandBar, Panel, Modal } from 'office-ui-fabric-react';
 import { CardEditorPanel } from './components/CardEditorPanel';
 import { ParameterEditorPanel } from './components/ParameterEditorPanel';
 import { CardListPanel } from './components/CardListPanel';
@@ -8,6 +8,7 @@ import { ImagesContext, ParametersContext, CardsContext, CardEditorManager, Card
 import { CardDescriptor, ImageDescriptor, ParameterDescriptor, ParameterType, Identity } from './Types'
 import { useItemCrud } from './ItemCrud';
 import { imageDescriptors } from './data/CardData';
+import { AddImageModal } from './components/modals/AddImageModal';
 
 initializeIcons();
 
@@ -45,11 +46,11 @@ function useNavigation() {
             viewParametersPanel: () => setParam('panel', 'parameters'),
             viewImagesPanel: () => setParam('panel', 'images'),
             viewCardsPanel: () => setParam('panel', 'cards'),
+            addImage: () => setParam('modal', 'add_image'),
             editCard: (card: Identity) => setParam('cardId', card.id),
             newCard: () => unsetParam('cardId'),
-            closePanel: () => {
-                unsetParam('panel');
-            },
+            closePanel: () => unsetParam('panel'),
+            closeModal: () => unsetParam('modal'),
             params: params,
             cardId: params.get('cardId'),
             panel: params.get('panel'),
@@ -111,11 +112,30 @@ export const App: React.FunctionComponent = () => {
             content: (
                 <ImageListPanel
                     onImageSelected={(i) => console.log(i)}
-                    onAddImage={() => console.log('Add image')}
+                    onAddImage={() => nav.addImage()}
                 />
             )
         }
-    }[panelId as ('parameters' | 'cards')];
+    }[panelId as ('parameters' | 'cards' | 'images')];
+    const modalId = nav.params.get('modal');
+    const modalContent = modalId !== null && {
+        add_image: {
+            title: 'Add image',
+            content: <AddImageModal
+                onAddImage={(name, src) => {
+                    const id = 'image-' + Date.now();
+                    images.add({
+                        id: id,
+                        name: name,
+                        src: src,
+                        tags: [],
+                    });
+                    nav.closeModal();
+                }}
+                onCancel={() => nav.closeModal()}
+            />
+        }
+    }[modalId as ('add_image')]
 
     return (
         <div>
@@ -169,6 +189,12 @@ export const App: React.FunctionComponent = () => {
                                 </div>
                             </CardEditorContext.Provider>
                         </Stack>
+                        <Modal
+                            isOpen={!!modalContent}
+                            isBlocking={true}
+                        >
+                            {modalContent && modalContent.content}
+                        </Modal>
                     </ImagesContext.Provider>
                 </CardsContext.Provider>
             </ParametersContext.Provider>

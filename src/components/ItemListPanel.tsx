@@ -1,6 +1,6 @@
 import React from 'react';
 import { Identity, NamedIdentity } from '../Types';
-import { Stack, IconButton, DocumentCard, DocumentCardType, Text, DocumentCardDetails, DocumentCardTitle, Separator } from 'office-ui-fabric-react';
+import { Stack, IconButton, DocumentCard, DocumentCardType, Text, DocumentCardDetails, DocumentCardActions, DocumentCardTitle, Separator } from 'office-ui-fabric-react';
 import { stackTokens } from '../Styling';
 
 type Props<T> = {
@@ -9,6 +9,7 @@ type Props<T> = {
     selectedItem?: Identity;
     items: (NamedIdentity & T)[];
     onItemSelected: (item: Identity) => void;
+    onRemoveItem?: (item: Identity) => void;
     onAddItem?: () => void;
     renderPreview: React.FunctionComponent<NamedIdentity & T>;
 }
@@ -17,6 +18,7 @@ export function ItemListPanel<T> (props: Props<T>) {
     const {
         items,
         onItemSelected,
+        onRemoveItem,
         renderPreview,
         onAddItem,
     } = props;
@@ -33,11 +35,26 @@ export function ItemListPanel<T> (props: Props<T>) {
                 />}
             </Stack>
             {items.map((item, index) => (
-                <DocumentCard key={item.id} type={DocumentCardType.compact} onClick={() => onItemSelected(item)}>
+                <DocumentCard key={item.id} type={DocumentCardType.compact}>
                     {renderPreview(item)}
                     <DocumentCardDetails>
                         <DocumentCardTitle title={item.name} />
+                        <DocumentCardActions
+                            actions={[
+                                {
+                                    iconProps: { iconName: 'Edit' },
+                                    onClick: () => onItemSelected(item),
+                                    ariaLabel: 'edit item'
+                                },
+                                ...(onRemoveItem ? [{
+                                    iconProps: { iconName: 'Trash' },
+                                    onClick: () => onRemoveItem(item),
+                                    ariaLabel: 'remove item'
+                                }] : [])
+                            ]}
+                        />
                     </DocumentCardDetails>
+                    
                 </DocumentCard>
             ))}
             {items.length === 0 && <Stack horizontalAlign='center'><Text>{emptyInfo}</Text></Stack>}
