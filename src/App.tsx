@@ -3,6 +3,7 @@ import { initializeIcons, Stack, CommandBar, Panel } from 'office-ui-fabric-reac
 import { CardEditorPanel } from './components/CardEditorPanel';
 import { ParameterEditorPanel } from './components/ParameterEditorPanel';
 import { CardListPanel } from './components/CardListPanel';
+import { ImageListPanel } from './components/ImageListPanel';
 import { ImagesContext, ParametersContext, CardsContext, CardEditorManager, CardEditorContext } from './Contexts';
 import { CardDescriptor, ImageDescriptor, ParameterDescriptor, ParameterType, Identity } from './Types'
 import { useItemCrud } from './ItemCrud';
@@ -42,7 +43,8 @@ function useNavigation() {
         }
         return {
             viewParametersPanel: () => setParam('panel', 'parameters'),
-            viewCardList: () => setParam('panel', 'cards'),
+            viewImagesPanel: () => setParam('panel', 'images'),
+            viewCardsPanel: () => setParam('panel', 'cards'),
             editCard: (card: Identity) => setParam('cardId', card.id),
             newCard: () => unsetParam('cardId'),
             closePanel: () => {
@@ -94,15 +96,24 @@ export const App: React.FunctionComponent = () => {
         setCard: (card) => card ? nav.editCard(card) : nav.newCard(),
     }), [nav.cardId]);
 
-    const panelId = nav.params.get("panel");
+    const panelId = nav.params.get('panel');
     const panelContent = panelId !== null && {
         parameters: {
-            title: "Parameter Editor",
+            title: 'Parameter Editor',
             content: <ParameterEditorPanel />,
         },
         cards: {
-            title: "Card List",
+            title: 'Card List',
             content: <CardListPanel onCardSelected={(c) => nav.editCard(c)}/>
+        },
+        images: {
+            title: 'Image list',
+            content: (
+                <ImageListPanel
+                    onImageSelected={(i) => console.log(i)}
+                    onAddImage={() => console.log('Add image')}
+                />
+            )
         }
     }[panelId as ('parameters' | 'cards')];
 
@@ -118,9 +129,14 @@ export const App: React.FunctionComponent = () => {
                 ]}
                 farItems={[
                     {
+                        key: 'image-list',
+                        text: 'View Image List',
+                        onClick: nav.viewImagesPanel
+                    },
+                    {
                         key: 'card-list',
                         text: 'View Card List',
-                        onClick: nav.viewCardList
+                        onClick: nav.viewCardsPanel
                     },
                     {
                         key: 'parameter-list',
@@ -137,18 +153,18 @@ export const App: React.FunctionComponent = () => {
             <ParametersContext.Provider value={parameters}>
                 <CardsContext.Provider value={cards}>
                     <ImagesContext.Provider value={images}>
-                        <Stack tokens={{padding: 20}} horizontalAlign="center">
+                        <Stack tokens={{padding: 20}} horizontalAlign='center'>
                             <Panel
                                 headerText={panelContent ? panelContent.title : ''}
                                 isOpen={!!panelContent}
                                 onDismiss={() => nav.closePanel()}
-                                closeButtonAriaLabel="Close"
+                                closeButtonAriaLabel='Close'
                                 isBlocking={false}
                             >
                                 {panelContent && panelContent.content}
                             </Panel>
                             <CardEditorContext.Provider value={cardEditorManager}>
-                                <div style={{background: "#fff", width: "100%", maxWidth: 900, padding: "10px 40px"}}>
+                                <div style={{background: '#fff', width: '100%', maxWidth: 900, padding: '10px 40px'}}>
                                     <CardEditorPanel />
                                 </div>
                             </CardEditorContext.Provider>

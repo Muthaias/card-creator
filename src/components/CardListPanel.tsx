@@ -3,6 +3,7 @@ import { Identity, NamedIdentity } from '../Types';
 import { Stack, DocumentCard, DocumentCardType, Text, DocumentCardPreview, DocumentCardDetails, DocumentCardTitle, Separator } from 'office-ui-fabric-react';
 import { CardsContext, ImagesContext } from '../Contexts';
 import { stackTokens } from '../Styling';
+import { ItemListPanel } from './ItemListPanel';
 
 type Props = {
     selectedCard?: Identity;
@@ -16,18 +17,15 @@ export const CardListPanelCore: React.FunctionComponent<Props> = (props) => {
     const {cards, onCardSelected} = props;
 
     return (
-        <Stack tokens={stackTokens}>
-            <Separator>Cards</Separator>
-            {cards.map(c => (
-                <DocumentCard key={c.id} type={DocumentCardType.compact} onClick={() => onCardSelected(c)}>
-                    <DocumentCardPreview previewImages={[{previewImageSrc: c.imageSrc, width: 144}]} />
-                    <DocumentCardDetails>
-                        <DocumentCardTitle title={c.name} />
-                    </DocumentCardDetails>
-                </DocumentCard>
-            ))}
-            {cards.length === 0 && <Stack horizontalAlign="center"><Text>No cards added</Text></Stack>}
-        </Stack>
+        <ItemListPanel<{imageSrc: string}>
+            title='Cards'
+            emptyInfo='No cards added'
+            renderPreview={(i) => (
+                <DocumentCardPreview previewImages={[{previewImageSrc: i.imageSrc, width: 144}]} />
+            )}
+            items={cards}
+            onItemSelected={onCardSelected}
+        />
     );
 }
 

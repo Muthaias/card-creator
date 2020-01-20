@@ -12,7 +12,7 @@ import {
     CardsContext,
 } from '../Contexts';
 import { ActionDescriptor, ActionData, ParameterDescriptor, ParameterType, CardDescriptor, CardCondition, ImageDescriptor } from '../Types';
-import { useLazyUpdate } from '../LazyUpdate';
+import { LazyTextField } from './LazyTextField';
 
 type Props = {
     availableModifiers: ItemDescriptor[];
@@ -231,7 +231,11 @@ export const CardEditorPanel = () => {
     const availableModifiers = parameters.items.filter(p => p.type === ParameterType.Value);
     const availableFlags = parameters.items.filter(p => p.type === ParameterType.Flag);
     const currentCard = cards.items.find(c => c.id === cardId);
-    return (
+    return cardId && currentCard === undefined ? (
+        <Stack horizontalAlign='center'>
+            <Text>Card with card id '{cardId}' could not be found.</Text>
+        </Stack>
+    ) : (
         <CardEditorCore 
             availableActions={actions.items}
             availableFlags={availableFlags}
@@ -247,21 +251,5 @@ export const CardEditorPanel = () => {
             }}
             card={currentCard}
         />
-    )
-}
-
-const LazyTextField: React.FunctionComponent<ITextFieldProps & {onChange: (ev: void, value?: string) => void}> = (props) => {
-    const onChange = props.onChange;
-    const [state, setState] = useLazyUpdate(
-        props.value,
-        onChange && ((value) => {
-            onChange(undefined, value);
-        })
     );
-
-    return (
-        <TextField {...props} value={state} onChange={(_, value) => {
-            setState(value);
-        }}/>
-    )
 }
