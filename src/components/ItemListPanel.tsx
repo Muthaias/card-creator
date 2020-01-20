@@ -33,7 +33,7 @@ export function ItemListPanel<T> (props: Props<T>) {
                 />}
             </Stack>
             {items.map((item, index) => (
-                <DocumentCard key={index} type={DocumentCardType.compact} onClick={() => onItemSelected(item)}>
+                <DocumentCard key={item.id} type={DocumentCardType.compact} onClick={() => onItemSelected(item)}>
                     {renderPreview(item)}
                     <DocumentCardDetails>
                         <DocumentCardTitle title={item.name} />

@@ -1,8 +1,7 @@
 import React, { useContext, useMemo } from 'react';
 import { Identity, NamedIdentity } from '../Types';
-import { Stack, DocumentCard, DocumentCardType, Text, DocumentCardPreview, DocumentCardDetails, DocumentCardTitle, Separator } from 'office-ui-fabric-react';
+import { DocumentCardPreview } from 'office-ui-fabric-react';
 import { CardsContext, ImagesContext } from '../Contexts';
-import { stackTokens } from '../Styling';
 import { ItemListPanel } from './ItemListPanel';
 
 type Props = {
