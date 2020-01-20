@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { initializeIcons, Stack, CommandBar, Panel, Modal } from 'office-ui-fabric-react';
+import { initializeIcons, Stack, CommandBar, Panel, Dialog } from 'office-ui-fabric-react';
 import { CardEditorPanel } from './components/CardEditorPanel';
 import { ParameterEditorPanel } from './components/ParameterEditorPanel';
 import { CardListPanel } from './components/CardListPanel';
@@ -189,12 +189,13 @@ export const App: React.FunctionComponent = () => {
                                 </div>
                             </CardEditorContext.Provider>
                         </Stack>
-                        <Modal
+                        <Dialog
                             isOpen={!!modalContent}
                             isBlocking={true}
+                            title={modalContent ? modalContent.title : ''}
                         >
                             {modalContent && modalContent.content}
-                        </Modal>
+                        </Dialog>
                     </ImagesContext.Provider>
                 </CardsContext.Provider>
             </ParametersContext.Provider>
