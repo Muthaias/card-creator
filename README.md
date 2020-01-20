@@ -15,5 +15,5 @@ Main features are as follows:
 # Contrbution
 Feel free to contribute in any way you see fit. Have a quick look at the current issues and start working on one or create another. Any kind of feedback is welcome.
 
-# Contributors
+## Contributors
 * [Mattias Nyberg](https://github.com/Muthaias)
