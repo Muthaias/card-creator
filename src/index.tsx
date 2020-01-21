@@ -10,7 +10,9 @@ mergeStyles({
       margin: 0,
       padding: 0,
       height: '100vh',
-      background: '#f6f6f6',
+      background: '#ffffff',
+      marginBottom: "200px",
+      marginTop: "25px"
     }
   }
 });

@@ -1,6 +1,6 @@
 import React, {useState, useCallback} from 'react';
-import { Stack, Image, TextField, DefaultButton, PrimaryButton, DialogFooter } from 'office-ui-fabric-react';
-import { stackTokens } from '../../Styling';
+import { Image, TextField } from 'office-ui-fabric-react';
+import { BaseModal } from './BaseModal';
 
 type Props = {
     onAddImage: (name: string, src: string) => void;
@@ -19,16 +19,10 @@ export const AddImageModal: React.FunctionComponent<Props> = (props) => {
     }, [src, name]);
 
     return (
-        <>
-            <Stack tokens={stackTokens}>
-                <Image styles={{root: {border: 'solid 1px #000', minHeight: 200, background: '#eee'}}} src={src} width='100%'/>
-                <TextField label='Name' value={name} onChange={(_, value) => value !== undefined && setName(value)}/>
-                <TextField label='Source' value={src} onChange={(_, value) => value !== undefined && setSrc(value)}/>
-            </Stack>
-            <DialogFooter>
-                <DefaultButton onClick={onCancel}>Cancel</DefaultButton>
-                <PrimaryButton onClick={addImage}>Create Image</PrimaryButton>
-            </DialogFooter>
-        </>
+        <BaseModal onCancel={onCancel} onConfirm={addImage}>
+            <Image styles={{root: {border: 'solid 1px #000', minHeight: 200, background: '#eee'}}} src={src} width='100%'/>
+            <TextField label='Name' value={name} onChange={(_, value) => value !== undefined && setName(value)}/>
+            <TextField label='Source' value={src} onChange={(_, value) => value !== undefined && setSrc(value)}/>
+        </BaseModal>
     );
 }

@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { initializeIcons, Stack, CommandBar, Panel, Dialog } from 'office-ui-fabric-react';
+import { initializeIcons, Stack, CommandBar, Panel, Dialog, Layer } from 'office-ui-fabric-react';
 import { CardEditorPanel } from './components/CardEditorPanel';
 import { ParameterEditorPanel } from './components/ParameterEditorPanel';
 import { CardListPanel } from './components/CardListPanel';
@@ -164,32 +164,39 @@ export const App: React.FunctionComponent = () => {
 
     return (
         <div>
-            <CommandBar
-                items={[
-                ]}
-                farItems={[
-                    {
-                        key: 'image-list',
-                        text: 'View Image List',
-                        onClick: nav.viewImagesPanel
-                    },
-                    {
-                        key: 'card-list',
-                        text: 'View Card List',
-                        onClick: nav.viewCardsPanel
-                    },
-                    {
-                        key: 'parameter-list',
-                        text: 'View Parameter List',
-                        onClick: nav.viewParametersPanel
-                    },
-                    {
-                        key: 'analyze-card-stack',
-                        text: 'Analyze Card Stack',
-                        onClick: () => {}
-                    }
-                ]}
-            />
+            <Layer>
+                <CommandBar
+                    styles={{
+                        root: {
+                            boxShadow: "0 2px 2px rgba(0, 0, 0, 0.2)"
+                        }
+                    }}
+                    items={[
+                        {
+                            key: 'advanced',
+                            text: 'Advanced',
+                            onClick: () => {}
+                        }
+                    ]}
+                    farItems={[
+                        {
+                            key: 'image-list',
+                            text: 'View Image List',
+                            onClick: nav.viewImagesPanel
+                        },
+                        {
+                            key: 'card-list',
+                            text: 'View Card List',
+                            onClick: nav.viewCardsPanel
+                        },
+                        {
+                            key: 'parameter-list',
+                            text: 'View Parameter List',
+                            onClick: nav.viewParametersPanel
+                        }
+                    ]}
+                />
+            </Layer>
             <ParametersContext.Provider value={parameters}>
                 <CardsContext.Provider value={cards}>
                     <ImagesContext.Provider value={images}>
@@ -204,7 +211,7 @@ export const App: React.FunctionComponent = () => {
                                 {panelContent && panelContent.content}
                             </Panel>
                             <CardEditorContext.Provider value={cardEditorManager}>
-                                <div style={{background: '#fff', width: '100%', maxWidth: 900, padding: '10px 40px'}}>
+                                <div style={{width: '100%', maxWidth: 900, padding: '10px 40px'}}>
                                     <CardEditorPanel />
                                 </div>
                             </CardEditorContext.Provider>
