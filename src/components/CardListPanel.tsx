@@ -10,10 +10,11 @@ type Props = {
         imageSrc: string;
     })[];
     onCardSelected: (card: Identity) => void;
+    onAddCard?: () => void;
 }
 
 export const CardListPanelCore: React.FunctionComponent<Props> = (props) => {
-    const {cards, onCardSelected} = props;
+    const {cards, onCardSelected, onAddCard} = props;
 
     return (
         <ItemListPanel<{imageSrc: string}>
@@ -24,19 +25,24 @@ export const CardListPanelCore: React.FunctionComponent<Props> = (props) => {
             )}
             items={cards}
             onItemSelected={onCardSelected}
+            onAddItem={onAddCard}
         />
     );
 }
 
 type CardListPanelProps = {
     onCardSelected?: (card: Identity) => void;
+    onAddCard?: () => void;
 }
 
 export const CardListPanel: React.FunctionComponent<CardListPanelProps> = (props) => {
     const cards = useContext(CardsContext);
     const images = useContext(ImagesContext);
+    const {
+        onCardSelected = () => {},
+        onAddCard
+    } = props;
 
-    const onCardSelected = props.onCardSelected === undefined ? () => {} : props.onCardSelected;
 
     const cardList = useMemo(() => cards.items.map(c => ({
         id: c.id,
@@ -45,6 +51,6 @@ export const CardListPanel: React.FunctionComponent<CardListPanelProps> = (props
     })), [cards, images]);
 
     return (
-        <CardListPanelCore cards={cardList} onCardSelected={onCardSelected}/>
+        <CardListPanelCore cards={cardList} onCardSelected={onCardSelected} onAddCard={onAddCard}/>
     );
 }

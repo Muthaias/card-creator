@@ -9,6 +9,7 @@ import { CardDescriptor, ImageDescriptor, ParameterDescriptor, ParameterType, Id
 import { useItemCrud } from './ItemCrud';
 import { imageDescriptors } from './data/CardData';
 import { AddImageModal } from './components/modals/AddImageModal';
+import { AddCardModal } from './components/modals/AddCardModal';
 
 initializeIcons();
 
@@ -47,6 +48,7 @@ function useNavigation() {
             viewImagesPanel: () => setParam('panel', 'images'),
             viewCardsPanel: () => setParam('panel', 'cards'),
             addImage: () => setParam('modal', 'add_image'),
+            addCard: () => setParam('modal', 'add_card'),
             editCard: (card: Identity) => setParam('cardId', card.id),
             newCard: () => unsetParam('cardId'),
             closePanel: () => unsetParam('panel'),
@@ -105,7 +107,12 @@ export const App: React.FunctionComponent = () => {
         },
         cards: {
             title: 'Card List',
-            content: <CardListPanel onCardSelected={(c) => nav.editCard(c)}/>
+            content: (
+                <CardListPanel
+                    onCardSelected={(c) => nav.editCard(c)}
+                    onAddCard={() => nav.addCard()}
+                />
+            )
         },
         images: {
             title: 'Image list',
@@ -120,7 +127,7 @@ export const App: React.FunctionComponent = () => {
     const modalId = nav.params.get('modal');
     const modalContent = modalId !== null && {
         add_image: {
-            title: 'Add image',
+            title: 'Add Image',
             content: <AddImageModal
                 onAddImage={(name, src) => {
                     const id = 'image-' + Date.now();
@@ -134,6 +141,24 @@ export const App: React.FunctionComponent = () => {
                 }}
                 onCancel={() => nav.closeModal()}
             />
+        },
+        add_card: {
+            title: 'Add Card',
+            content: <AddCardModal 
+                onAddCard={(name: string) => {
+                    const id = 'image-' + Date.now();
+                    cards.add({
+                        id: id,
+                        name: name,
+                        text: '',
+                        conditions: [],
+                        location: '',
+                        actions: [],
+                    });
+                    nav.closeModal();
+                }}
+                onCancel={() => nav.closeModal()}
+            />
         }
     }[modalId as ('add_image')]
 
@@ -141,11 +166,6 @@ export const App: React.FunctionComponent = () => {
         <div>
             <CommandBar
                 items={[
-                    {
-                        key: 'new-card',
-                        text: 'New Card',
-                        onClick: nav.newCard
-                    },
                 ]}
                 farItems={[
                     {
