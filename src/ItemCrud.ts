@@ -2,47 +2,53 @@ import { useState, useEffect } from 'react';
 import { Identity } from './Types';
 
 export type CrudContext<T> = {
-    items: T[];
+    items: () => T[];
     update: (item: Identity & Partial<T>) => void;
-    add: (item: T) => void;
-    remove: (item: Identity) => void;
+    create: (item: T) => void;
+    delete: (item: Identity) => void;
 }
 
 export function createtInitialCrudContext<T>(items: T[]) {
     return {
-        items: items,
+        items: () => items,
         update: () => {},
-        add: () => {},
-        remove: () => {},
+        create: () => {},
+        delete: () => {},
     };
 }
 
 export function createItemCrud<T extends Identity> (items: T[], listener?: () => void): CrudContext<T> & {listener?: () => void} {
-    const itemCrud: CrudContext<T> & {listener?: () => void} = {
-        items: items,
+    const itemCrud: CrudContext<T> & {
+        listener?: () => void;
+        itemMap: Map<string, T>;
+    } = {
+        itemMap: items.reduce((map, item: T) => {map.set(item.id, item); return map}, new Map<string, T>()),
+        items: function () {
+            return Array.from(this.itemMap.values());
+        },
         update: function (item) {
-            const currentItem = this.items.find(i => i.id === item.id);
+            const currentItem = this.itemMap.get(item.id);
             Object.assign(currentItem, item);
             if (this.listener) this.listener();
         },
-        add: function (item) {
-            this.items.push(item);
+        create: function (item) {
+            this.itemMap.set(item.id, item);
             if (this.listener) this.listener();
         },
-        remove: function (item) {
-            this.items = this.items.filter(i => i.id !== item.id);
+        delete: function (item) {
+            this.itemMap.delete(item.id)
             if (this.listener) this.listener();
         },
         listener: listener
     }
     itemCrud.update = itemCrud.update.bind(itemCrud);
-    itemCrud.add = itemCrud.add.bind(itemCrud);
-    itemCrud.remove = itemCrud.remove.bind(itemCrud);
+    itemCrud.create = itemCrud.create.bind(itemCrud);
+    itemCrud.delete = itemCrud.delete.bind(itemCrud);
 
     return itemCrud;
 }
 
-export function useItemCrud<T extends Identity>(initialItems: T[], itemListener?: (items: T[]) => void): CrudContext<T> & {listener?: () => void} {
+export function useItemCrud<T extends Identity>(initialItems: T[], itemListener?: (items: CrudContext<T>) => void): CrudContext<T> & {listener?: () => void} {
     const [items, setItems] = useState(
         createItemCrud<T>(initialItems)
     );
@@ -50,7 +56,7 @@ export function useItemCrud<T extends Identity>(initialItems: T[], itemListener?
         if (!items.listener) {
             items.listener = function () {
                 setItems(Object.assign({}, this));
-                if (itemListener) itemListener(this.items);
+                if (itemListener) itemListener(this);
             }
             setItems(Object.assign({}, items));
         }

@@ -78,7 +78,7 @@ function setData<T>(id: string, data: T) {
 export const App: React.FunctionComponent = () => {
     const images = useItemCrud<ImageDescriptor>(
         getData('images') || imageDescriptors,
-        (items) => setData('images', items),
+        (crud) => setData('images', crud.items()),
     );
     const parameters = useItemCrud<ParameterDescriptor>(
         getData('parameters') || [
@@ -87,11 +87,11 @@ export const App: React.FunctionComponent = () => {
             'Security',
             'Money'
         ].map(name => ({id: name.toLowerCase().replace(/\s+/g, '-'), name: name, type: ParameterType.Value, systemParameter: true})),
-        (items) => setData('parameters', items)
+        (crud) => setData('parameters', crud.items())
     );
     const cards = useItemCrud<CardDescriptor>(
         getData('cards') || [],
-        (items) => setData('cards', items),
+        (crud) => setData('cards', crud.items()),
     );
     const nav = useNavigation();
     const cardEditorManager: CardEditorManager = useMemo(() => ({
@@ -131,7 +131,7 @@ export const App: React.FunctionComponent = () => {
             content: <AddImageModal
                 onAddImage={(name, src) => {
                     const id = 'image-' + Date.now();
-                    images.add({
+                    images.create({
                         id: id,
                         name: name,
                         src: src,
@@ -147,7 +147,7 @@ export const App: React.FunctionComponent = () => {
             content: <AddCardModal 
                 onAddCard={(name: string) => {
                     const id = 'image-' + Date.now();
-                    cards.add({
+                    cards.create({
                         id: id,
                         name: name,
                         text: '',

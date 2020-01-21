@@ -63,18 +63,13 @@ export const ParameterEditorCore: React.FunctionComponent<Props> = (props) => {
 }
 
 export const ParameterEditorPanel: React.FunctionComponent<{}> = () => {
-    const {
-        items,
-        update,
-        add,
-        remove,
-    } = useContext(ParametersContext);
+    const parameters = useContext(ParametersContext);
     return (
         <ParameterEditorCore
-            parameters={items}
-            onUpdate={update}
-            onAdd={add}
-            onRemove={remove}
+            parameters={parameters.items()}
+            onUpdate={parameters.update}
+            onAdd={parameters.create}
+            onRemove={parameters.delete}
         />
     );
 }

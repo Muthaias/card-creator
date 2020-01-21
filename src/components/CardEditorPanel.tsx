@@ -1,5 +1,5 @@
 import React, {useContext} from 'react';
-import { Stack, Text, Slider, TextField, ITextFieldProps, Dropdown, Image, Separator, Toggle, IconButton } from 'office-ui-fabric-react';
+import { Stack, Text, Slider, Dropdown, Image, Separator, Toggle, IconButton } from 'office-ui-fabric-react';
 import { LazyValueSection } from './ValueSection';
 import { LazyItemEditor, ItemDescriptor } from './ItemEditor';
 import { Range } from './Range';
@@ -228,24 +228,24 @@ export const CardEditorPanel = () => {
     const cardEditorManager = useContext(CardEditorContext);
     const {cardId} = cardEditorManager;
 
-    const availableModifiers = parameters.items.filter(p => p.type === ParameterType.Value);
-    const availableFlags = parameters.items.filter(p => p.type === ParameterType.Flag);
-    const currentCard = cards.items.find(c => c.id === cardId);
+    const availableModifiers = parameters.items().filter(p => p.type === ParameterType.Value);
+    const availableFlags = parameters.items().filter(p => p.type === ParameterType.Flag);
+    const currentCard = cards.items().find(c => c.id === cardId);
     return cardId && currentCard === undefined ? (
         <Stack horizontalAlign='center'>
             <Text>Card with card id '{cardId}' could not be found.</Text>
         </Stack>
     ) : (
         <CardEditorCore 
-            availableActions={actions.items}
+            availableActions={actions.items()}
             availableFlags={availableFlags}
             availableModifiers={availableModifiers}
-            availableImages={images.items}
+            availableImages={images.items()}
             onChange={c => {
                 if (currentCard) {
                     cards.update(c);
                 } else if (cardId === null) {
-                    cards.add(c);
+                    cards.create(c);
                     cardEditorManager.setCard(c);
                 }
             }}

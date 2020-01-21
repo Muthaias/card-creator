@@ -1,7 +1,7 @@
 import React, { useContext, useMemo, useCallback } from 'react';
 import { Identity, NamedIdentity } from '../Types';
 import { DocumentCardPreview } from 'office-ui-fabric-react';
-import { CardsContext, ImagesContext } from '../Contexts';
+import { ImagesContext } from '../Contexts';
 import { ItemListPanel } from './ItemListPanel';
 
 type Props = {
@@ -43,14 +43,14 @@ export const ImageListPanel: React.FunctionComponent<ImageListPanelProps> = (pro
     const onImageSelected = props.onImageSelected === undefined ? () => {} : props.onImageSelected;
     const onAddImage = props.onAddImage;
 
-    const imageList = useMemo(() => images.items.map(item => ({
+    const imageList = useMemo(() => images.items().map(item => ({
         id: item.id,
         name: item.name,
         imageSrc: item.src,
     })), [images]);
 
     const removeImage = useCallback((image: Identity) => {
-        images.remove(image);
+        images.delete(image);
     }, [images]);
 
     return (

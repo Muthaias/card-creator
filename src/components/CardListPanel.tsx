@@ -44,10 +44,10 @@ export const CardListPanel: React.FunctionComponent<CardListPanelProps> = (props
     } = props;
 
 
-    const cardList = useMemo(() => cards.items.map(c => ({
+    const cardList = useMemo(() => cards.items().map(c => ({
         id: c.id,
         name: c.name,
-        imageSrc: c.imageId ? (images.items.find(i => i.id === c.imageId) || {src: ''}).src : '',
+        imageSrc: c.imageId ? (images.items().find(i => i.id === c.imageId) || {src: ''}).src : '',
     })), [cards, images]);
 
     return (
