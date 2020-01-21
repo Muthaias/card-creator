@@ -12,7 +12,7 @@ Main features are as follows:
 * Export cards to `swipeforfuture.com`
 * Download/upload `card project` as a JSON.
 
-# Contrbution
+# Contribution
 Feel free to contribute in any way you see fit. Have a quick look at the current issues and start working on one or create another. Any kind of feedback is welcome.
 
 ## Contributors
