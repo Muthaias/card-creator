@@ -13,7 +13,9 @@ export const exportGameWorld = ({
     const cardData = cardItems.map(card => exportCard({card, images}));
 
     return {
-        cards: cardData
+        cards: cardData,
+        events: [],
+        eventCards: [],
     }
 }
 
