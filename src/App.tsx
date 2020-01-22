@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { initializeIcons, Stack, CommandBar, Panel, Dialog, Layer } from 'office-ui-fabric-react';
+
 import { CardEditorPanel } from './components/CardEditorPanel';
 import { ParameterEditorPanel } from './components/ParameterEditorPanel';
 import { CardListPanel } from './components/CardListPanel';
@@ -11,6 +12,7 @@ import { imageDescriptors } from './data/CardData';
 import { AddImageModal } from './components/modals/AddImageModal';
 import { AddCardModal } from './components/modals/AddCardModal';
 import { ExportGameWorldModal } from './components/modals/ExportGameWorldModal';
+import { exportGameWorld } from './io/export'
 
 initializeIcons();
 
@@ -155,8 +157,10 @@ export const App: React.FunctionComponent = () => {
         export_game_world: {
             title: 'Export Game World',
             content: <ExportGameWorldModal
-                onExport={(name: string) => {
-                    console.log(name)
+                onExport={(id: string) => {
+                    const gameWorldId = 'game_world:' + id;
+                    const gameWorld = exportGameWorld({ cards, images });
+                    setData(gameWorldId, gameWorld);
                     nav.closeModal();
                 }}
                 onCancel={() => nav.closeModal()}
