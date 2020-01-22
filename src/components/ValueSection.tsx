@@ -78,7 +78,7 @@ export const ValueSection: React.FunctionComponent<ValueSectionProps> = (props: 
                             onValueChange(item, v);
                         }}
                         label={item.name}
-                        min={modifierType === 'set' ? 0 : -100}
+                        min={['set', 'replace'].includes(modifierType) ? 0 : -100}
                         max={100}
                         step={1}
                         value={value}
