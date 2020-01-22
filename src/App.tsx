@@ -10,29 +10,20 @@ import { useItemCrud } from './ItemCrud';
 import { imageDescriptors } from './data/CardData';
 import { AddImageModal } from './components/modals/AddImageModal';
 import { AddCardModal } from './components/modals/AddCardModal';
+import { ExportGameWorldModal } from './components/modals/ExportGameWorldModal';
 
 initializeIcons();
 
-function createCardEditorManager(initialCardId: string | null): CardEditorManager & {listener?: (manager: CardEditorManager) => void} {
-    return {
-        cardId: initialCardId,
-        setCard: function (card) {
-            this.cardId = card ? card.id : null;
-            if (this.listener) this.listener(this);
-        }
-    }
-}
-
 function updateUrl(params: URLSearchParams) {
     const newurl = window.location.protocol + '//' + window.location.host + window.location.pathname + '?' + params.toString();
-    window.history.pushState({path:newurl},'',newurl);
+    window.history.pushState({ path: newurl }, '', newurl);
 }
 
 function useNavigation() {
     const [navState, setNavSate] = useState(window.location.search);
     const nav = useMemo(() => {
         const params = new URLSearchParams(navState);
-       
+
         const setParam = (id: string, value: string) => {
             params.set(id, value);
             updateUrl(params);
@@ -44,6 +35,7 @@ function useNavigation() {
             setNavSate(params.toString());
         }
         return {
+            exportGameWorld: () => setParam('modal', 'export_game_world'),
             viewParametersPanel: () => setParam('panel', 'parameters'),
             viewImagesPanel: () => setParam('panel', 'images'),
             viewCardsPanel: () => setParam('panel', 'cards'),
@@ -86,7 +78,7 @@ export const App: React.FunctionComponent = () => {
             'People',
             'Security',
             'Money'
-        ].map(name => ({id: name.toLowerCase().replace(/\s+/g, '-'), name: name, type: ParameterType.Value, systemParameter: true})),
+        ].map(name => ({ id: name.toLowerCase().replace(/\s+/g, '-'), name: name, type: ParameterType.Value, systemParameter: true })),
         (crud) => setData('parameters', crud.items())
     );
     const cards = useItemCrud<CardDescriptor>(
@@ -144,7 +136,7 @@ export const App: React.FunctionComponent = () => {
         },
         add_card: {
             title: 'Add Card',
-            content: <AddCardModal 
+            content: <AddCardModal
                 onAddCard={(name: string) => {
                     const id = 'image-' + Date.now();
                     cards.create({
@@ -159,8 +151,18 @@ export const App: React.FunctionComponent = () => {
                 }}
                 onCancel={() => nav.closeModal()}
             />
+        },
+        export_game_world: {
+            title: 'Export Game World',
+            content: <ExportGameWorldModal
+                onExport={(name: string) => {
+                    console.log(name)
+                    nav.closeModal();
+                }}
+                onCancel={() => nav.closeModal()}
+            />
         }
-    }[modalId as ('add_image')]
+    }[modalId as ('add_image' | 'add_card' | 'export_game_world')]
 
     return (
         <div>
@@ -175,7 +177,12 @@ export const App: React.FunctionComponent = () => {
                         {
                             key: 'advanced',
                             text: 'Advanced',
-                            onClick: () => {}
+                            onClick: () => { }
+                        },
+                        {
+                            key: '',
+                            text: 'Export',
+                            onClick: nav.exportGameWorld
                         }
                     ]}
                     farItems={[
@@ -200,7 +207,7 @@ export const App: React.FunctionComponent = () => {
             <ParametersContext.Provider value={parameters}>
                 <CardsContext.Provider value={cards}>
                     <ImagesContext.Provider value={images}>
-                        <Stack tokens={{padding: 20}} horizontalAlign='center'>
+                        <Stack tokens={{ padding: 20 }} horizontalAlign='center'>
                             <Panel
                                 headerText={panelContent ? panelContent.title : ''}
                                 isOpen={!!panelContent}
@@ -211,7 +218,7 @@ export const App: React.FunctionComponent = () => {
                                 {panelContent && panelContent.content}
                             </Panel>
                             <CardEditorContext.Provider value={cardEditorManager}>
-                                <div style={{width: '100%', maxWidth: 900, padding: '10px 40px'}}>
+                                <div style={{ width: '100%', maxWidth: 900, padding: '10px 40px' }}>
                                     <CardEditorPanel />
                                 </div>
                             </CardEditorContext.Provider>
