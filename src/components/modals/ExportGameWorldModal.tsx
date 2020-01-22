@@ -3,7 +3,7 @@ import { TextField, Text } from 'office-ui-fabric-react';
 import { BaseModal } from './BaseModal';
 
 type Props = {
-    onExport: (name: string) => void;
+    onExport: (id: string) => void;
     onCancel: () => void;
 }
 
@@ -12,15 +12,18 @@ export const ExportGameWorldModal: React.FunctionComponent<Props> = (props) => {
         onExport,
         onCancel,
     } = props;
-    const [name, setName] = useState("");
+    const [id, setId] = useState("");
     const exportGameWorld = useCallback(() => {
-        onExport(name);
-    }, [name]);
+        onExport(id);
+    }, [id]);
+    const setAdjustedId = (id: string) => {
+        setId(id.replace(/(-|\s)+/g, '-').toLowerCase());
+    }
 
     return (
         <BaseModal onCancel={onCancel} onConfirm={exportGameWorld}>
-            <Text>Choose a name for your game world to export:</Text>
-            <TextField label='Name' value={name} onChange={(_, value) => value !== undefined && setName(value)} />
+            <Text>Choose a id for your game world to export:</Text>
+            <TextField label='Id' value={id} onChange={(_, value) => value !== undefined && setAdjustedId(value)} />
         </BaseModal>
     );
 }
