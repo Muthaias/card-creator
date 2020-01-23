@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
-import { Identity } from './Types'
+import { useState, useEffect } from 'react';
+import { Identity } from './Types';
 
 export type CrudContext<T> = {
     items: () => T[];
@@ -12,44 +12,36 @@ export type CrudContext<T> = {
 export function createtInitialCrudContext<T>(items: T[]): CrudContext<T> {
     return {
         items: () => items,
-        get: () => undefined,
+        get: (item: Identity) => undefined,
         update: () => {},
         create: () => {},
-        delete: () => {}
+        delete: () => {},
     };
 }
 
-export function createItemCrud<T extends Identity>(
-    items: T[],
-    listener?: () => void
-): CrudContext<T> & { listener?: () => void } {
+export function createItemCrud<T extends Identity> (items: T[], listener?: () => void): CrudContext<T> & {listener?: () => void} {
     const itemCrud: CrudContext<T> & {
-        listener?: () => void
-        itemMap: Map<string, T>
+        listener?: () => void;
+        itemMap: Map<string, T>;
     } = {
-        itemMap: (
-            items.reduce((map, item: T) => {
-                map.set(item.id, item);
-                return map;
-            }, new Map<string, T>())
-        ),
-        items: function() {
+        itemMap: items.reduce((map, item: T) => {map.set(item.id, item); return map}, new Map<string, T>()),
+        items: function () {
             return Array.from(this.itemMap.values());
         },
-        get: function(item: Identity) {
-            return this.itemMap.get(item.id);
-        },
-        update: function(item) {
+        update: function (item) {
             const currentItem = this.itemMap.get(item.id);
             Object.assign(currentItem, item);
             if (this.listener) this.listener();
         },
-        create: function(item) {
+        get: function(item: Identity) {
+            return this.itemMap.get(item.id);
+        },
+        create: function (item) {
             this.itemMap.set(item.id, item);
             if (this.listener) this.listener();
         },
-        delete: function(item) {
-            this.itemMap.delete(item.id);
+        delete: function (item) {
+            this.itemMap.delete(item.id)
             if (this.listener) this.listener();
         },
         listener: listener
@@ -63,14 +55,13 @@ export function createItemCrud<T extends Identity>(
     return itemCrud;
 }
 
-export function useItemCrud<T extends Identity>(
-    initialItems: T[],
-    itemListener?: (items: CrudContext<T>) => void
-): CrudContext<T> & { listener?: () => void } {
-    const [items, setItems] = useState(createItemCrud<T>(initialItems));
+export function useItemCrud<T extends Identity>(initialItems: T[], itemListener?: (items: CrudContext<T>) => void): CrudContext<T> & {listener?: () => void} {
+    const [items, setItems] = useState(
+        createItemCrud<T>(initialItems)
+    );
     useEffect(() => {
         if (!items.listener) {
-            items.listener = function() {
+            items.listener = function () {
                 setItems(Object.assign({}, this));
                 if (itemListener) itemListener(this);
             }
@@ -80,16 +71,16 @@ export function useItemCrud<T extends Identity>(
     return items;
 }
 
-export function useManager<M>(
-    initialManager: M & { listener?: (manager: M) => void }
-): M & { listener?: (manager: M) => void } {
-    const [manager, setManager] = useState(initialManager);
+export function useManager<M>(initialManager: M & {listener?: (manager: M) => void}): M & {listener?: (manager: M) => void} {
+    const [manager, setManager] = useState(
+        initialManager
+    );
     useEffect(() => {
         if (!manager.listener) {
-            manager.listener = function() {
-                setManager(Object.assign({}, this))
+            manager.listener = function () {
+                setManager(Object.assign({}, this));
             }
-            setManager(Object.assign({}, manager))
+            setManager(Object.assign({}, manager));
         }
     }, [manager.listener]);
     return manager;
