@@ -19,7 +19,7 @@ type Props = {
     availableFlags: ParameterDescriptor[];
     availableActions: ActionDescriptor[];
     availableImages: ImageDescriptor[];
-    card?: CardDescriptor,
+    card?: CardDescriptor;
     onChange?: (card: CardDescriptor) => void;
 }
 

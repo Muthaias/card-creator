@@ -15,10 +15,10 @@ type Values = {[x: string]: number};
 type Flags = {[x: string]: boolean};
 
 type ValueSectionProps = {
-    valueItems: ItemDescriptor[],
-    flagItems: ItemDescriptor[],
-    values: Values,
-    flags: Flags,
+    valueItems: ItemDescriptor[];
+    flagItems: ItemDescriptor[];
+    values: Values;
+    flags: Flags;
     description: string;
     modifierType: ModifierType;
     onChange?: (description: string, values: {[id: string]: number}, flags: {[id: string]: boolean}, modifierType: ModifierType) => void
