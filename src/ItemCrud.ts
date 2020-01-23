@@ -3,14 +3,16 @@ import { Identity } from './Types';
 
 export type CrudContext<T> = {
     items: () => T[];
+    get: (item: Identity) => T | undefined;
     update: (item: Identity & Partial<T>) => void;
     create: (item: T) => void;
     delete: (item: Identity) => void;
 }
 
-export function createtInitialCrudContext<T>(items: T[]) {
+export function createtInitialCrudContext<T>(items: T[]): CrudContext<T> {
     return {
         items: () => items,
+        get: (item: Identity) => undefined,
         update: () => {},
         create: () => {},
         delete: () => {},
@@ -31,6 +33,9 @@ export function createItemCrud<T extends Identity> (items: T[], listener?: () =>
             Object.assign(currentItem, item);
             if (this.listener) this.listener();
         },
+        get: function(item: Identity) {
+            return this.itemMap.get(item.id);
+        },
         create: function (item) {
             this.itemMap.set(item.id, item);
             if (this.listener) this.listener();
@@ -44,6 +49,8 @@ export function createItemCrud<T extends Identity> (items: T[], listener?: () =>
     itemCrud.update = itemCrud.update.bind(itemCrud);
     itemCrud.create = itemCrud.create.bind(itemCrud);
     itemCrud.delete = itemCrud.delete.bind(itemCrud);
+    itemCrud.get = itemCrud.get.bind(itemCrud);
+    itemCrud.items = itemCrud.items.bind(itemCrud);
 
     return itemCrud;
 }

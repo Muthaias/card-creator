@@ -15,10 +15,10 @@ type Values = {[x: string]: number};
 type Flags = {[x: string]: boolean};
 
 type ValueSectionProps = {
-    valueItems: ItemDescriptor[],
-    flagItems: ItemDescriptor[],
-    values: Values,
-    flags: Flags,
+    valueItems: ItemDescriptor[];
+    flagItems: ItemDescriptor[];
+    values: Values;
+    flags: Flags;
     description: string;
     modifierType: ModifierType;
     onChange?: (description: string, values: {[id: string]: number}, flags: {[id: string]: boolean}, modifierType: ModifierType) => void
@@ -78,7 +78,7 @@ export const ValueSection: React.FunctionComponent<ValueSectionProps> = (props: 
                             onValueChange(item, v);
                         }}
                         label={item.name}
-                        min={modifierType === 'set' ? 0 : -100}
+                        min={['set', 'replace'].includes(modifierType) ? 0 : -100}
                         max={100}
                         step={1}
                         value={value}

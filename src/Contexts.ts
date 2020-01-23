@@ -14,15 +14,15 @@ import {
 
 
 export const ActionsContext = React.createContext<CrudContext<ActionDescriptor>>(
-    createtInitialCrudContext(
+    createtInitialCrudContext<ActionDescriptor>(
         ['Left', 'Right'].map(name => ({id: name.toLowerCase(), name: name}))
     )
 );
 export const ImagesContext = React.createContext<CrudContext<ImageDescriptor>>(
-    createtInitialCrudContext([])
+    createtInitialCrudContext<ImageDescriptor>([])
 );
 export const CardsContext = React.createContext<CrudContext<CardDescriptor>>(
-    createtInitialCrudContext([])
+    createtInitialCrudContext<CardDescriptor>([])
 );
 export const ParametersContext = React.createContext<CrudContext<ParameterDescriptor>>(
     createtInitialCrudContext([
