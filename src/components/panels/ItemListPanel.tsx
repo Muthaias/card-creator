@@ -1,7 +1,7 @@
 import React from 'react';
-import { Identity, NamedIdentity } from '../Types';
+import { Identity, NamedIdentity } from '../../Types';
 import { Stack, IconButton, DocumentCard, DocumentCardType, Text, DocumentCardDetails, DocumentCardActions, DocumentCardTitle, Separator } from 'office-ui-fabric-react';
-import { stackTokens } from '../Styling';
+import { stackTokens } from '../../Styling';
 
 type Props<T> = {
     title?: string;

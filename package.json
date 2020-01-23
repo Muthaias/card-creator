@@ -13,9 +13,10 @@
     "gen": "npx plop"
   },
   "dependencies": {
+    "office-ui-fabric-react": "^7.0.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
-    "office-ui-fabric-react": "^7.0.0"
+    "react-router-dom": "^5.1.2"
   },
   "devDependencies": {
     "just-stack-react": "^1.0.0",
