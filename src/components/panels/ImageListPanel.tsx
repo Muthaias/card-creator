@@ -1,7 +1,7 @@
 import React, { useContext, useMemo, useCallback } from 'react';
-import { Identity, NamedIdentity } from '../Types';
+import { Identity, NamedIdentity } from '../../Types';
 import { DocumentCardPreview } from 'office-ui-fabric-react';
-import { ImagesContext } from '../Contexts';
+import { ImagesContext } from '../../Contexts';
 import { ItemListPanel } from './ItemListPanel';
 
 type Props = {

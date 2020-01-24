@@ -7,7 +7,6 @@ import { stackTokens } from '../Styling';
 import {
     ActionsContext,
     ParametersContext,
-    CardEditorContext,
     ImagesContext,
     CardsContext,
 } from '../Contexts';
@@ -220,13 +219,11 @@ export const CardEditorCore: React.FunctionComponent<Props> = ({
     );
 }
 
-export const CardEditorPanel = () => {
+export const CardEditorPanel: React.FunctionComponent<{cardId: string}> = ({cardId}) => {
     const actions = useContext(ActionsContext);
     const parameters = useContext(ParametersContext);
     const images = useContext(ImagesContext);
     const cards = useContext(CardsContext);
-    const cardEditorManager = useContext(CardEditorContext);
-    const {cardId} = cardEditorManager;
 
     const availableModifiers = parameters.items().filter(p => p.type === ParameterType.Value);
     const availableFlags = parameters.items().filter(p => p.type === ParameterType.Flag);
@@ -242,12 +239,7 @@ export const CardEditorPanel = () => {
             availableModifiers={availableModifiers}
             availableImages={images.items()}
             onChange={c => {
-                if (currentCard) {
-                    cards.update(c);
-                } else if (cardId === null) {
-                    cards.create(c);
-                    cardEditorManager.setCard(c);
-                }
+                cards.update(c);
             }}
             card={currentCard}
         />

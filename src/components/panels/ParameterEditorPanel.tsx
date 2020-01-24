@@ -1,8 +1,8 @@
 import React, { useContext } from 'react';
 import { Stack, IconButton, TextField, Separator, Text } from 'office-ui-fabric-react';
-import { ParameterDescriptor, ParameterType, Identity } from '../Types';
-import { ParametersContext } from '../Contexts';
-import { stackTokens } from '../Styling';
+import { ParameterDescriptor, ParameterType, Identity } from '../../Types';
+import { ParametersContext } from '../../Contexts';
+import { stackTokens } from '../../Styling';
 
 type Props = {
     parameters: ParameterDescriptor[];
