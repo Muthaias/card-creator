@@ -16,7 +16,7 @@ type Props = {
 export const ModalControl: React.FunctionComponent<Props> = ({nav, setData}) => {
     const images = useContext(ImagesContext);
     const cards = useContext(CardsContext);
-    const modalId = nav.params.get('modal');
+    const modalId = nav.modal;
     const modalContentMap = useMemo<{[x: string]: {title: string, content: JSX.Element}}>(() => ({
         add_image: {
             title: 'Add Image',

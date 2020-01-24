@@ -14,12 +14,12 @@ export type Navigation = {
     addImage(): void;
     addCard(): void;
     editCard(card: Identity): void;
-    newCard(): void;
     closePanel(): void;
     closeModal(): void;
     params: URLSearchParams;
-    cardId: string | null;
+    route: string | null;
     panel: string | null;
+    modal: string | null;
 }
 
 export function useNavigation(): Navigation {
@@ -44,15 +44,23 @@ export function useNavigation(): Navigation {
             viewCardsPanel: () => setParam('panel', 'cards'),
             addImage: () => setParam('modal', 'add_image'),
             addCard: () => setParam('modal', 'add_card'),
-            editCard: (card: Identity) => setParam('cardId', card.id),
-            newCard: () => unsetParam('cardId'),
+            editCard: (card: Identity) => setParam('route', 'card/' + card.id),
             closePanel: () => unsetParam('panel'),
             closeModal: () => unsetParam('modal'),
             params: params,
-            cardId: params.get('cardId'),
+            route: params.get('route'),
             panel: params.get('panel'),
+            modal: params.get('modal')
         };
         return navigation;
     }, [navState]);
     return nav;
+}
+
+export function routeMatch(nav: Navigation, regexp: RegExp, exec: (match: RegExpMatchArray) => JSX.Element): JSX.Element | null {
+    if (nav.route) {
+        const match = regexp.exec(nav.route);
+        return match ? exec(match) : null;
+    }
+    return null;
 }

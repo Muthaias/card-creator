@@ -37,13 +37,3 @@ export const ParametersContext = React.createContext<CrudContext<ParameterDescri
         ].map(name => ({id: name.toLowerCase().replace(/\s+/g, '-'), name: name, type: ParameterType.Flag}))
     ])
 );
-
-export type CardEditorManager = {
-    cardId: string | null;
-    setCard: (card: Identity | null) => void;
-};
-
-export const CardEditorContext = React.createContext<CardEditorManager>({
-    cardId: null,
-    setCard: () => {}
-});

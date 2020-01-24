@@ -1,14 +1,15 @@
-import React, { useMemo, useState } from 'react';
-import { initializeIcons, Stack, CommandBar, Panel, Dialog, Layer } from 'office-ui-fabric-react';
+import React from 'react';
+import { initializeIcons, Stack, CommandBar, Layer, Text, Separator, Link } from 'office-ui-fabric-react';
 
 import { CardEditorPanel } from './components/CardEditorPanel';
 import { PanelControl } from './components/panels/PanelControl';
-import { ImagesContext, ParametersContext, CardsContext, CardEditorManager, CardEditorContext } from './Contexts';
+import { ImagesContext, ParametersContext, CardsContext } from './Contexts';
 import { CardDescriptor, ImageDescriptor, ParameterDescriptor, ParameterType } from './Types'
 import { useItemCrud } from './ItemCrud';
-import { useNavigation } from './Navigation';
+import { useNavigation, routeMatch } from './Navigation';
 import { imageDescriptors } from './data/CardData';
 import { ModalControl } from './components/modals/ModalControl';
+import { ParameterEditorPanel } from './components/panels/ParameterEditorPanel';
 
 initializeIcons();
 
@@ -45,10 +46,6 @@ export const App: React.FunctionComponent = () => {
         (crud) => setData('cards', crud.items()),
     );
     const nav = useNavigation();
-    const cardEditorManager: CardEditorManager = useMemo(() => ({
-        cardId: nav.cardId,
-        setCard: (card) => card ? nav.editCard(card) : nav.newCard(),
-    }), [nav.cardId]);
 
     return (
         <div>
@@ -95,11 +92,24 @@ export const App: React.FunctionComponent = () => {
                     <ImagesContext.Provider value={images}>
                         <Stack tokens={{ padding: 20 }} horizontalAlign='center'>
                             <PanelControl nav={nav}/>
-                            <CardEditorContext.Provider value={cardEditorManager}>
-                                <div style={{ width: '100%', maxWidth: 900, padding: '10px 40px' }}>
-                                    <CardEditorPanel />
-                                </div>
-                            </CardEditorContext.Provider>
+                            <div style={{ width: '100%', maxWidth: 900, padding: '10px 40px' }}>
+                                {(
+                                    routeMatch(nav, /^card\/(.*)/, ([_, cardId]) => (
+                                        <CardEditorPanel cardId={cardId}/>
+                                    ))
+                                ) || (
+                                    routeMatch(nav, /^parameters/, () => (
+                                        <ParameterEditorPanel />
+                                    ))
+                                ) || (
+                                    <Stack>
+                                        <Separator>Swipe For Future: Card Creator</Separator>
+                                        <Text>Welcome to the card creator for <Link href='https://swipeforfuture.com'>swipeforfuture.com</Link></Text>
+                                        <Separator>Contribute</Separator>
+                                        <Text>Fork us on <Link href='https://github.com/Muthaias/card-creator'>Github</Link> or add bug reports or feature requests. </Text>
+                                    </Stack>
+                                )}
+                            </div>
                         </Stack>
                         <ModalControl nav={nav} setData={setData}/>
                     </ImagesContext.Provider>
