@@ -7,6 +7,7 @@ import { ExportGameWorldModal } from './ExportGameWorldModal';
 import { exportGameWorld } from '../../io/export'
 import { Navigation } from '../../Navigation';
 import { ImagesContext, CardsContext } from '../../Contexts';
+import { CardType } from '../../Types';
 
 type Props = {
     nav: Navigation;
@@ -41,6 +42,7 @@ export const ModalControl: React.FunctionComponent<Props> = ({nav, setData}) => 
                     const id = 'image-' + Date.now();
                     cards.create({
                         id: id,
+                        type: CardType.Action,
                         name: name,
                         text: '',
                         conditions: [],

@@ -30,8 +30,14 @@ export type CardCondition = {
     flags: Parameters<boolean>;
 }
 
+export enum CardType {
+    Event = "event",
+    Action = "action",
+}
+
 export type CardDescriptor = NamedIdentity & {
     imageId?: string;
+    type: CardType;
     name: string;
     location: string;
     text: string;
@@ -51,4 +57,5 @@ export type ActionData = {
     modifierType: ModifierType;
     values: Parameters<number>;
     flags: Parameters<boolean>;
+    nextCardId?: string;
 }

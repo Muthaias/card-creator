@@ -10,7 +10,7 @@ import {
     ImagesContext,
     CardsContext,
 } from '../Contexts';
-import { ActionDescriptor, ActionData, ParameterDescriptor, ParameterType, CardDescriptor, CardCondition, ImageDescriptor } from '../Types';
+import { ActionDescriptor, ActionData, ParameterDescriptor, ParameterType, CardDescriptor, CardCondition, ImageDescriptor, CardType } from '../Types';
 import { LazyTextField } from './LazyTextField';
 
 type Props = {
@@ -31,6 +31,7 @@ export const CardEditorCore: React.FunctionComponent<Props> = ({
 }) => {
     const card: CardDescriptor = props.card === undefined ? {
         id: "card-" + Date.now(),
+        type: CardType.Action,
         name: "",
         location: "",
         text: "",
@@ -79,6 +80,10 @@ export const CardEditorCore: React.FunctionComponent<Props> = ({
             ]
         });
     }
+    const cardTypeMap: [string, CardType][] = [
+        ['Action', CardType.Action],
+        ['Event', CardType.Event],
+    ];
     return (
         <Stack
             tokens={stackTokens}
@@ -108,6 +113,13 @@ export const CardEditorCore: React.FunctionComponent<Props> = ({
                 </Stack>
                 <Stack tokens={stackTokens} horizontalAlign="stretch" styles={{root: {width: "50%"}}}>
                     <Dropdown
+                        label="Type"
+                        placeholder="Card Type"
+                        selectedKey={cardTypeMap.find(([_, type]) => type === (card.type || CardType.Action))![0]}
+                        onChange={(_, option) => option && updateCard({type: cardTypeMap.find(([key, _]) => option.key === key)![1]})}
+                        options={cardTypeMap.map(([key, _]) => ({key: key, text: key}))}
+                    />
+                    <Dropdown
                         label="Urgency"
                         placeholder="Action Urgency"
                         options={["High", "Medium", "Low"].map(t => ({key: t, text: t}))}
@@ -122,15 +134,17 @@ export const CardEditorCore: React.FunctionComponent<Props> = ({
                     />
                 </Stack>
             </Stack>
-            <Stack horizontal styles={{root: {width: "100%"}}}>
-                <Separator styles={{root: {width: "100%"}}}>Conditions</Separator>
-                <IconButton
-                    iconProps={{iconName: 'Add'}}
-                    onClick={addCondition}
-                />
-            </Stack>
-            {card.conditions.length === 0 && <Stack horizontalAlign="center"><Text>No conditions added</Text></Stack>}
-            {card.conditions.map((condition: CardCondition, index, conditions) => (
+            {card.type !== CardType.Event && (
+                <Stack horizontal styles={{root: {width: "100%"}}}>
+                    <Separator styles={{root: {width: "100%"}}}>Conditions</Separator>
+                    <IconButton
+                        iconProps={{iconName: 'Add'}}
+                        onClick={addCondition}
+                    />
+                </Stack>
+            )}
+            {card.type !== CardType.Event && card.conditions.length === 0 && <Stack horizontalAlign="center"><Text>No conditions added</Text></Stack>}
+            {card.type !== CardType.Event && card.conditions.map((condition: CardCondition, index, conditions) => (
                 <Stack horizontal key={index} verticalAlign="center" tokens={stackTokens}>
                     <Stack styles={{root: {width: '100%'}}}>
                         <Slider label="Weight" value={condition.weight} onChange={(value) => updateCondition(index, {
