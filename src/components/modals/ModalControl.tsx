@@ -71,8 +71,8 @@ export const ModalControl: React.FunctionComponent<Props> = ({nav, setData}) => 
 
     return (
         <Dialog
-            isOpen={!!modalContent}
-            isBlocking={true}
+            hidden={!modalContent}
+            modalProps={{isBlocking: true}}
             title={modalContent ? modalContent.title : ''}
         >
             {modalContent && modalContent.content}
