@@ -57,10 +57,19 @@ export function useNavigation(): Navigation {
     return nav;
 }
 
-export function routeMatch(nav: Navigation, regexp: RegExp, exec: (match: RegExpMatchArray) => JSX.Element): JSX.Element | null {
+export function routeMatch<T = JSX.Element>(nav: Navigation, regexp: RegExp, exec: (match: RegExpMatchArray) => T): T | null {
     if (nav.route) {
         const match = regexp.exec(nav.route);
         return match ? exec(match) : null;
+    }
+    return null;
+}
+
+export function routeSwitch<T = JSX.Element>(nav: Navigation, items: {regexp: RegExp, exec: (match: RegExpMatchArray) => T}[]): T | null {
+    const route = nav.route;
+    if (route !== null) {
+        const item = items.find(({regexp, exec}) => regexp.exec(route));
+        return item ? routeMatch<T>(nav, item.regexp, item.exec) : null;
     }
     return null;
 }
