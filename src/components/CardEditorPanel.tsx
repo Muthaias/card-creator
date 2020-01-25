@@ -18,6 +18,7 @@ type Props = {
     availableFlags: ParameterDescriptor[];
     availableActions: ActionDescriptor[];
     availableImages: ImageDescriptor[];
+    availableCards: CardDescriptor[];
     card?: CardDescriptor;
     onChange?: (card: CardDescriptor) => void;
 }
@@ -27,6 +28,7 @@ export const CardEditorCore: React.FunctionComponent<Props> = ({
     availableFlags,
     availableActions,
     availableImages,
+    availableCards,
     ...props
 }) => {
     const card: CardDescriptor = props.card === undefined ? {
@@ -225,6 +227,15 @@ export const CardEditorCore: React.FunctionComponent<Props> = ({
                                     modifierType: modifierType
                                 })}
                             />
+                            {card.type === CardType.Event && (
+                                <Dropdown
+                                    label="Next Card"
+                                    selectedKey={actionData.nextCardId || 'none'}
+                                    onChange={(_, __, index) => index !== undefined && updateAction(Object.assign({}, actionData, {nextCardId: availableCards[index - 1] && availableCards[index - 1].id}))}
+                                    placeholder="Card Select"
+                                    options={[{key: 'none', text: 'None'}, ...availableCards.map(i => ({key: i.id, text: i.name}))]}
+                                />
+                            )}
                         </Stack>
                     );
                 })}
@@ -242,6 +253,7 @@ export const CardEditorPanel: React.FunctionComponent<{cardId: string}> = ({card
     const availableModifiers = parameters.items().filter(p => p.type === ParameterType.Value);
     const availableFlags = parameters.items().filter(p => p.type === ParameterType.Flag);
     const currentCard = cards.items().find(c => c.id === cardId);
+    const availableCards = cards.items().filter(c => c.type === CardType.Event && c.id !== cardId);
     return cardId && currentCard === undefined ? (
         <Stack horizontalAlign='center'>
             <Text>Card with card id '{cardId}' could not be found.</Text>
@@ -252,6 +264,7 @@ export const CardEditorPanel: React.FunctionComponent<{cardId: string}> = ({card
             availableFlags={availableFlags}
             availableModifiers={availableModifiers}
             availableImages={images.items()}
+            availableCards={availableCards}
             onChange={c => {
                 cards.update(c);
             }}
