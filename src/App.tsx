@@ -10,6 +10,7 @@ import { useNavigation, routeMatch } from './Navigation';
 import { imageDescriptors } from './data/CardData';
 import { ModalControl } from './components/modals/ModalControl';
 import { ParameterEditorPanel } from './components/panels/ParameterEditorPanel';
+import { EventEditorPanel } from './components/EventEditorPanel';
 
 initializeIcons();
 
@@ -113,10 +114,7 @@ export const App: React.FunctionComponent = () => {
                                         ))
                                     ) || (
                                         routeMatch(nav, /^event\/(.*)/, ([_, eventId]) => (
-                                            <Stack>
-                                                <Separator>Events</Separator>
-                                                <Text>Your event should be here {eventId}</Text>
-                                            </Stack>
+                                            <EventEditorPanel eventId={eventId}/>
                                         ))
                                     ) || (
                                         <Stack>

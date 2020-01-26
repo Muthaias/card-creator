@@ -48,6 +48,7 @@ export const EventListPanelCore: React.FunctionComponent<Props> = (props) => {
                 )}
                 items={unassignedEvents}
                 onRemoveItem={onRemoveEvent}
+                onAddItem={onAddEvent}
                 onItemSelected={onEventSelected}
             />
         </>
