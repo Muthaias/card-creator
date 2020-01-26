@@ -172,7 +172,7 @@ export const CardEditorCore: React.FunctionComponent<Props> = ({
                             )}
                         />
                         <LazyItemEditor<boolean>
-                            items={availableModifiers}
+                            items={availableFlags}
                             values={condition.flags}
                             label={"Select Flags"}
                             defaultItemValue={true}
