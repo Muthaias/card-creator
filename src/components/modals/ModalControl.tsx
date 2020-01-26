@@ -6,8 +6,9 @@ import { AddCardModal } from './AddCardModal';
 import { ExportGameWorldModal } from './ExportGameWorldModal';
 import { exportGameWorld } from '../../io/export'
 import { Navigation } from '../../Navigation';
-import { ImagesContext, CardsContext } from '../../Contexts';
+import { ImagesContext, CardsContext, EventsContext } from '../../Contexts';
 import { CardType } from '../../Types';
+import { AddEventModal } from './AddEventModal';
 
 type Props = {
     nav: Navigation;
@@ -17,6 +18,7 @@ type Props = {
 export const ModalControl: React.FunctionComponent<Props> = ({nav, setData}) => {
     const images = useContext(ImagesContext);
     const cards = useContext(CardsContext);
+    const events = useContext(EventsContext);
     const modalId = nav.modal;
     const modalContentMap = useMemo<{[x: string]: {title: string, content: JSX.Element}}>(() => ({
         add_image: {
@@ -48,6 +50,21 @@ export const ModalControl: React.FunctionComponent<Props> = ({nav, setData}) => 
                         conditions: [],
                         location: '',
                         actions: [],
+                    });
+                    nav.closeModal();
+                }}
+                onCancel={() => nav.closeModal()}
+            />
+        },
+        add_event: {
+            title: 'Add Event',
+            content: <AddEventModal
+                onAddEvent={(name: string) => {
+                    const id = 'event-' + Date.now();
+                    events.create({
+                        id: id,
+                        name: name,
+                        conditions: [],
                     });
                     nav.closeModal();
                 }}

@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Identity } from './Types';
+import { Identity, CardType } from './Types';
 
 function updateUrl(params: URLSearchParams) {
     const newurl = window.location.protocol + '//' + window.location.host + window.location.pathname + '?' + params.toString();
@@ -11,9 +11,12 @@ export type Navigation = {
     viewParametersPanel(): void;
     viewImagesPanel(): void;
     viewCardsPanel(): void;
+    viewEventsPanel(): void;
     addImage(): void;
     addCard(): void;
+    addEvent(): void;
     editCard(card: Identity): void;
+    editEvent(event: Identity): void;
     closePanel(): void;
     closeModal(): void;
     params: URLSearchParams;
@@ -42,9 +45,12 @@ export function useNavigation(): Navigation {
             viewParametersPanel: () => setParam('panel', 'parameters'),
             viewImagesPanel: () => setParam('panel', 'images'),
             viewCardsPanel: () => setParam('panel', 'cards'),
+            viewEventsPanel: () => setParam('panel', 'events'),
             addImage: () => setParam('modal', 'add_image'),
             addCard: () => setParam('modal', 'add_card'),
+            addEvent: () => setParam('modal', 'add_event'),
             editCard: (card: Identity) => setParam('route', 'card/' + card.id),
+            editEvent: (event: Identity) => setParam('route', 'event/' + event.id),
             closePanel: () => unsetParam('panel'),
             closeModal: () => unsetParam('modal'),
             params: params,

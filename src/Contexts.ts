@@ -6,6 +6,7 @@ import {
     ParameterType,
     CardDescriptor,
     Identity,
+    EventDescriptor,
 } from './Types';
 import {
     CrudContext,
@@ -24,6 +25,9 @@ export const ImagesContext = React.createContext<CrudContext<ImageDescriptor>>(
 export const CardsContext = React.createContext<CrudContext<CardDescriptor>>(
     createtInitialCrudContext<CardDescriptor>([])
 );
+export const EventsContext = React.createContext<CrudContext<EventDescriptor>>(
+    createtInitialCrudContext<EventDescriptor>([])
+)
 export const ParametersContext = React.createContext<CrudContext<ParameterDescriptor>>(
     createtInitialCrudContext([
         ...[

@@ -3,8 +3,8 @@ import { initializeIcons, Stack, CommandBar, Layer, Text, Separator, Link } from
 
 import { CardEditorPanel } from './components/CardEditorPanel';
 import { PanelControl } from './components/panels/PanelControl';
-import { ImagesContext, ParametersContext, CardsContext } from './Contexts';
-import { CardDescriptor, ImageDescriptor, ParameterDescriptor, ParameterType } from './Types'
+import { ImagesContext, ParametersContext, CardsContext, EventsContext } from './Contexts';
+import { CardDescriptor, ImageDescriptor, ParameterDescriptor, ParameterType, EventDescriptor } from './Types'
 import { useItemCrud } from './ItemCrud';
 import { useNavigation, routeMatch } from './Navigation';
 import { imageDescriptors } from './data/CardData';
@@ -45,6 +45,10 @@ export const App: React.FunctionComponent = () => {
         getData('cards') || [],
         (crud) => setData('cards', crud.items()),
     );
+    const events = useItemCrud<EventDescriptor>(
+        getData('events') || [],
+        (crud) => setData('events', crud.items()),
+    );
     const nav = useNavigation();
 
     return (
@@ -70,18 +74,23 @@ export const App: React.FunctionComponent = () => {
                     ]}
                     farItems={[
                         {
-                            key: 'image-list',
-                            text: 'View Image List',
-                            onClick: nav.viewImagesPanel
-                        },
-                        {
                             key: 'card-list',
-                            text: 'View Card List',
+                            text: 'Card List',
                             onClick: nav.viewCardsPanel
                         },
                         {
+                            key: 'event-list',
+                            text: 'Event List',
+                            onClick: nav.viewEventsPanel
+                        },
+                        {
+                            key: 'image-list',
+                            text: 'Image List',
+                            onClick: nav.viewImagesPanel
+                        },
+                        {
                             key: 'parameter-list',
-                            text: 'View Parameter List',
+                            text: 'Parameter List',
                             onClick: nav.viewParametersPanel
                         }
                     ]}
@@ -90,28 +99,37 @@ export const App: React.FunctionComponent = () => {
             <ParametersContext.Provider value={parameters}>
                 <CardsContext.Provider value={cards}>
                     <ImagesContext.Provider value={images}>
-                        <Stack tokens={{ padding: 20 }} horizontalAlign='center'>
-                            <PanelControl nav={nav}/>
-                            <div style={{ width: '100%', maxWidth: 900, padding: '10px 40px' }}>
-                                {(
-                                    routeMatch(nav, /^card\/(.*)/, ([_, cardId]) => (
-                                        <CardEditorPanel cardId={cardId}/>
-                                    ))
-                                ) || (
-                                    routeMatch(nav, /^parameters/, () => (
-                                        <ParameterEditorPanel />
-                                    ))
-                                ) || (
-                                    <Stack>
-                                        <Separator>Swipe For Future: Card Creator</Separator>
-                                        <Text>Welcome to the card creator for <Link href='https://swipeforfuture.com'>swipeforfuture.com</Link></Text>
-                                        <Separator>Contribute</Separator>
-                                        <Text>Fork us on <Link href='https://github.com/Muthaias/card-creator'>Github</Link> or add bug reports or feature requests. </Text>
-                                    </Stack>
-                                )}
-                            </div>
-                        </Stack>
-                        <ModalControl nav={nav} setData={setData}/>
+                        <EventsContext.Provider value={events}>
+                            <Stack tokens={{ padding: 20 }} horizontalAlign='center'>
+                                <PanelControl nav={nav}/>
+                                <div style={{ width: '100%', maxWidth: 900, padding: '10px 40px' }}>
+                                    {(
+                                        routeMatch(nav, /^card\/(.*)/, ([_, cardId]) => (
+                                            <CardEditorPanel cardId={cardId}/>
+                                        ))
+                                    ) || (
+                                        routeMatch(nav, /^parameters/, () => (
+                                            <ParameterEditorPanel />
+                                        ))
+                                    ) || (
+                                        routeMatch(nav, /^event\/(.*)/, ([_, eventId]) => (
+                                            <Stack>
+                                                <Separator>Events</Separator>
+                                                <Text>Your event should be here {eventId}</Text>
+                                            </Stack>
+                                        ))
+                                    ) || (
+                                        <Stack>
+                                            <Separator>Swipe For Future: Card Creator</Separator>
+                                            <Text>Welcome to the card creator for <Link href='https://swipeforfuture.com'>swipeforfuture.com</Link></Text>
+                                            <Separator>Contribute</Separator>
+                                            <Text>Fork us on <Link href='https://github.com/Muthaias/card-creator'>Github</Link> or add bug reports or feature requests. </Text>
+                                        </Stack>
+                                    )}
+                                </div>
+                            </Stack>
+                            <ModalControl nav={nav} setData={setData}/>
+                        </EventsContext.Provider>
                     </ImagesContext.Provider>
                 </CardsContext.Provider>
             </ParametersContext.Provider>

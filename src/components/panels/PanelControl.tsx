@@ -5,6 +5,7 @@ import { ParameterEditorPanel } from './ParameterEditorPanel';
 import { CardListPanel } from './CardListPanel';
 import { ImageListPanel } from './ImageListPanel';
 import { Navigation } from '../../Navigation';
+import { EventListPanel } from './EventListPanel';
 
 type Props = {
     nav: Navigation;
@@ -34,9 +35,18 @@ export const PanelControl: React.FunctionComponent<Props> = ({nav}) => {
                     onAddImage={() => nav.addImage()}
                 />
             )
+        },
+        events: {
+            title: 'Event list',
+            content: (
+                <EventListPanel
+                    onAddEvent={() => nav.addEvent()}
+                    onEventSelected={(e) => nav.editEvent(e)}
+                />
+            )
         }
     }), [nav]);
-    const panelContent = panelContentMap[panelId as ('parameters' | 'cards' | 'images')];
+    const panelContent = panelContentMap[panelId as ('parameters' | 'cards' | 'images' | 'events')];
     return (
         <Panel
             headerText={panelContent ? panelContent.title : ''}

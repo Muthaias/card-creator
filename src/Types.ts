@@ -45,6 +45,11 @@ export type CardDescriptor = NamedIdentity & {
     actions: ActionData[];
 }
 
+export type EventDescriptor = NamedIdentity & {
+    conditions: CardCondition[];
+    initialCardId?: string;
+}
+
 export type Parameters<T> = {
     [x: string]: T;
 }
