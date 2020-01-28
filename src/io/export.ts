@@ -19,7 +19,7 @@ export const exportGameWorld = ({
     )).map(card => exportActionCard({card, images})).reduce((acc, actionCardGroup) => acc.concat(actionCardGroup), []);
     const eventCards = cardItems.filter(card => (
         card.type === CardType.Event
-    )).map(card => exportEventCard({card, images}));
+    )).map(card => exportEventCard({card, images})).reduce<{[x: string]: SFF.EventCard}>((cardMap, card) => {cardMap[card.id] = card; return cardMap}, {});
     const eventData = eventItems.map(event => exportEvent({event, cards})).reduce((acc, eventCardGroup) => acc.concat(eventCardGroup), []);
 
     const worldData = {
@@ -27,7 +27,6 @@ export const exportGameWorld = ({
         events: eventData,
         eventCards: eventCards,
     }
-    console.log(worldData);
     return worldData;
 }
 
@@ -88,10 +87,10 @@ export const exportCardDescription = ({
     index
 }: {
     card: CardDescriptor,
-    images: CrudContext<ImageDescriptor>,
+    images?: CrudContext<ImageDescriptor>,
     index: number
 }): SFF.CardDescription => {
-    const image: ImageDescriptor =  images.get({id: card.imageId || ''}) || {
+    const image: ImageDescriptor =  images && images.get({id: card.imageId || ''}) || {
         id: '',
         name: '',
         src: '',
@@ -99,7 +98,7 @@ export const exportCardDescription = ({
     };
 
     return {
-        id: identityToId(card) + '[' + index + ']',
+        id: identityToId(card, index),
         image: image.src,
         title: card.name,
         text: card.text,
@@ -145,7 +144,7 @@ const exportEvent = ({
     return card === null ? [] : event.conditions.map<SFF.WorldEvent>((condition) => ({
         probability: condition.weight,
         shouldTriggerWhen: [exportCondition(condition)],
-        initialEventCardId: identityToId(card),
+        initialEventCardId: identityToId(card, 0),
     }));
 }
 
@@ -154,6 +153,6 @@ const defaultAction: SFF.CardActionData = {
     modifier: {}
 };
 
-const identityToId = (identity: NamedIdentity): string => {
-    return identity.name + ":" + identity.id;
+const identityToId = (identity: NamedIdentity, index?: number): string => {
+    return identity.name + ":" + identity.id + (index === undefined ? '' : '[' + index + ']');
 }
