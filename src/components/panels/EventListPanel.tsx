@@ -83,11 +83,15 @@ export const EventListPanel: React.FunctionComponent<EventListPanelProps> = ({
         name: e.name,
         card: e.initialCardId !== undefined ? getCardData(e.initialCardId) : undefined,
     }));
+    const removeEvent = useCallback((event: Identity) => {
+        events.delete(event);
+    }, [events]);
     return (
         <EventListPanelCore 
             events={eventList}
             onAddEvent={onAddEvent}
             onEventSelected={onEventSelected}
+            onRemoveEvent={removeEvent}
         />
     );
 }

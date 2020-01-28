@@ -149,7 +149,7 @@ export const CardEditorCore: React.FunctionComponent<Props> = ({
             {card.type !== CardType.Event && card.conditions.map((condition: CardCondition, index, conditions) => (
                 <Stack horizontal key={index} verticalAlign="center" tokens={stackTokens}>
                     <Stack styles={{root: {width: '100%'}}}>
-                        <Slider label="Weight" value={condition.weight} onChange={(value) => updateCondition(index, {
+                        <Slider label="Weight" min={0} max={1} step={0.1} value={condition.weight} onChange={(value) => updateCondition(index, {
                             weight: value,
                         })}/>
                         <LazyItemEditor<[number, number]>

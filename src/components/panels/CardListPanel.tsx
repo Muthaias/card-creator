@@ -1,6 +1,6 @@
-import React, { useContext, useMemo } from 'react';
+import React, { useContext, useMemo, useCallback } from 'react';
 import { Identity, NamedIdentity, CardType } from '../../Types';
-import { DocumentCardPreview } from 'office-ui-fabric-react';
+import { DocumentCardPreview, ImageFit } from 'office-ui-fabric-react';
 import { CardsContext, ImagesContext } from '../../Contexts';
 import { ItemListPanel } from './ItemListPanel';
 
@@ -12,10 +12,11 @@ type Props = {
     })[];
     onCardSelected: (card: Identity) => void;
     onAddCard?: () => void;
+    onRemoveCard?: (card: Identity) => void;
 }
 
 export const CardListPanelCore: React.FunctionComponent<Props> = (props) => {
-    const {cards, onCardSelected, onAddCard} = props;
+    const {cards, onCardSelected, onAddCard, onRemoveCard} = props;
 
     return (
         <>
@@ -23,21 +24,23 @@ export const CardListPanelCore: React.FunctionComponent<Props> = (props) => {
                 title='Action Cards'
                 emptyInfo='No action cards added'
                 renderPreview={(i) => (
-                    <DocumentCardPreview previewImages={[{previewImageSrc: i.imageSrc, width: 144}]} />
+                    <DocumentCardPreview previewImages={[{previewImageSrc: i.imageSrc, width: 144, height: 110, imageFit: ImageFit.centerContain}]} />
                 )}
                 items={cards.filter(c => c.type !== CardType.Event)}
                 onItemSelected={onCardSelected}
                 onAddItem={onAddCard}
+                onRemoveItem={onRemoveCard}
             />
             <ItemListPanel<{imageSrc: string}>
                 title='Event Cards'
                 emptyInfo='No event cards added'
                 renderPreview={(i) => (
-                    <DocumentCardPreview previewImages={[{previewImageSrc: i.imageSrc, width: 144}]} />
+                    <DocumentCardPreview previewImages={[{previewImageSrc: i.imageSrc, width: 144, height: 110, imageFit: ImageFit.centerContain}]} />
                 )}
                 items={cards.filter(c => c.type === CardType.Event)}
                 onItemSelected={onCardSelected}
                 onAddItem={onAddCard}
+                onRemoveItem={onRemoveCard}
             />
         </>
     );
@@ -56,7 +59,6 @@ export const CardListPanel: React.FunctionComponent<CardListPanelProps> = (props
         onAddCard
     } = props;
 
-
     const cardList = useMemo(() => cards.items().map(c => ({
         id: c.id,
         name: c.name,
@@ -64,7 +66,16 @@ export const CardListPanel: React.FunctionComponent<CardListPanelProps> = (props
         imageSrc: c.imageId ? (images.items().find(i => i.id === c.imageId) || {src: ''}).src : '',
     })), [cards, images]);
 
+    const removeCard = useCallback((card: Identity) => {
+        cards.delete(card);
+    }, [cards]);
+
     return (
-        <CardListPanelCore cards={cardList} onCardSelected={onCardSelected} onAddCard={onAddCard}/>
+        <CardListPanelCore
+            cards={cardList}
+            onCardSelected={onCardSelected}
+            onAddCard={onAddCard}
+            onRemoveCard={removeCard}
+        />
     );
 }
