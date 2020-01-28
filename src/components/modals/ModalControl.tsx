@@ -76,7 +76,7 @@ export const ModalControl: React.FunctionComponent<Props> = ({nav, setData}) => 
             content: <ExportGameWorldModal
                 onExport={(id: string) => {
                     const gameWorldId = 'game_world:' + id;
-                    const gameWorld = exportGameWorld({ cards, images });
+                    const gameWorld = exportGameWorld({ cards, images, events });
                     setData(gameWorldId, gameWorld);
                     nav.closeModal();
                 }}

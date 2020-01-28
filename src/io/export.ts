@@ -1,31 +1,96 @@
 import { CrudContext } from '../ItemCrud'
-import { ImageDescriptor, CardDescriptor, CardCondition, ActionData } from '../Types'
+import { ImageDescriptor, CardDescriptor, CardCondition, ActionData, NamedIdentity, EventDescriptor, CardType } from '../Types'
 import * as SFF from '../SFFTypes';
 
 export const exportGameWorld = ({
     cards,
-    images
+    images,
+    events,
 }: {
-    cards: CrudContext<CardDescriptor>
-    images: CrudContext<ImageDescriptor>
+    cards: CrudContext<CardDescriptor>;
+    images: CrudContext<ImageDescriptor>;
+    events: CrudContext<EventDescriptor>;
 }) => {
     const cardItems = cards.items();
-    const cardData = cardItems.map(card => exportCard({card, images}));
+    const eventItems = events.items();
 
-    return {
-        cards: cardData,
-        events: [],
-        eventCards: [],
+    const actionCards = cardItems.filter(card => (
+        card.type !== CardType.Event
+    )).map(card => exportActionCard({card, images})).reduce((acc, actionCardGroup) => acc.concat(actionCardGroup), []);
+    const eventCards = cardItems.filter(card => (
+        card.type === CardType.Event
+    )).map(card => exportEventCard({card, images}));
+    const eventData = eventItems.map(event => exportEvent({event, cards})).reduce((acc, eventCardGroup) => acc.concat(eventCardGroup), []);
+
+    const worldData = {
+        cards: actionCards,
+        events: eventData,
+        eventCards: eventCards,
     }
+    console.log(worldData);
+    return worldData;
 }
 
-const exportCard = ({
+const exportActionCard = ({
     card,
     images
 }: {
     card: CardDescriptor,
     images: CrudContext<ImageDescriptor>
-}): SFF.CardData => {
+}): SFF.CardData[] => {
+    const description = exportCardDescription({card, images, index: 0});
+
+    const [
+        leftAction = defaultAction,
+        rightAction = defaultAction
+    ] = card.actions.map(exportAction);
+    
+    return card.conditions.map<SFF.CardData>((condition, index) => (
+        Object.assign({}, description, {
+            id: identityToId(card) + '[' + index + ']',
+            type: 'card' as 'card',
+            weight: condition.weight,
+            isAvailableWhen: [exportCondition(condition)],
+            actions: {
+                left: leftAction,
+                right: rightAction
+            }
+        })
+    ));
+}
+
+const exportEventCard = ({
+    card,
+    images
+}: {
+    card: CardDescriptor,
+    images: CrudContext<ImageDescriptor>
+}): SFF.EventCard => {
+    const description = exportCardDescription({card, images, index: 0});
+
+    const [
+        leftAction = defaultAction,
+        rightAction = defaultAction
+    ] = card.actions.map(exportAction);
+    
+    return Object.assign(description, {
+        type: 'event' as 'event',
+        actions: {
+            left: leftAction,
+            right: rightAction
+        }
+    });
+}
+
+export const exportCardDescription = ({
+    card,
+    images,
+    index
+}: {
+    card: CardDescriptor,
+    images: CrudContext<ImageDescriptor>,
+    index: number
+}): SFF.CardDescription => {
     const image: ImageDescriptor =  images.get({id: card.imageId || ''}) || {
         id: '',
         name: '',
@@ -33,28 +98,14 @@ const exportCard = ({
         tags: [],
     };
 
-    const isAvailableWhen = card.conditions.map(exportCondition);
-    const [
-        leftAction = defaultAction,
-        rightAction = defaultAction
-    ] = card.actions.map(exportAction);
-
-    // TODO: Use weights from all conditions when supported in SFF
-    const weight = card.conditions[0] && card.conditions[0].weight || 1;
-    
     return {
-        type: 'card',
+        id: identityToId(card) + '[' + index + ']',
         image: image.src,
         title: card.name,
         text: card.text,
-        weight,
+        weight: 1,
         distance: card.location,
-        isAvailableWhen,
-        actions: {
-            left: leftAction,
-            right: rightAction
-        }
-    }
+    };
 }
 
 const exportCondition = (condition: CardCondition): SFF.WorldQuery => {
@@ -83,7 +134,26 @@ const exportAction = (action: ActionData): SFF.CardActionData => {
     }
 }
 
+const exportEvent = ({
+    event,
+    cards,
+}: {
+    event: EventDescriptor,
+    cards: CrudContext<CardDescriptor>
+}): SFF.WorldEvent[] => {
+    const card: NamedIdentity | null = (event.initialCardId === undefined ? undefined : cards.get({id: event.initialCardId})) || null;
+    return card === null ? [] : event.conditions.map<SFF.WorldEvent>((condition) => ({
+        probability: condition.weight,
+        shouldTriggerWhen: [exportCondition(condition)],
+        initialEventCardId: identityToId(card),
+    }));
+}
+
 
 const defaultAction: SFF.CardActionData = {
     modifier: {}
 };
+
+const identityToId = (identity: NamedIdentity): string => {
+    return identity.name + ":" + identity.id;
+}

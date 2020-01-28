@@ -1,6 +1,7 @@
 type WorldState = {}
 
-interface CardDescription {
+export interface CardDescription {
+    id: string
     image: string
     title: string
     text: string
