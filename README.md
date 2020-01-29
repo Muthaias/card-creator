@@ -16,4 +16,6 @@ Main features are as follows:
 Feel free to contribute in any way you see fit. Have a quick look at the current issues and start working on one or create another. Any kind of feedback is welcome.
 
 ## Contributors
+This game is a community effort, created together with these awesome people:
 * [Mattias Nyberg](https://github.com/Muthaias)
+* [Samuel Plumppu](https://github.com/Greenheart)
