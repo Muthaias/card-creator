@@ -121,11 +121,6 @@ export const CardEditorCore: React.FunctionComponent<Props> = ({
                         onChange={(_, option) => option && updateCard({type: cardTypeMap.find(([key, _]) => option.key === key)![1]})}
                         options={cardTypeMap.map(([key, _]) => ({key: key, text: key}))}
                     />
-                    <Dropdown
-                        label="Urgency"
-                        placeholder="Action Urgency"
-                        options={["High", "Medium", "Low"].map(t => ({key: t, text: t}))}
-                    />
                     <LazyTextField label="Location" value={card.location} onChange={(_: any, value?: string) => value !== undefined && updateCard({location: value})}/>
                     <LazyTextField
                         label="Text"
