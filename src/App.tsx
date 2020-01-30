@@ -12,7 +12,7 @@ import { imageDescriptors } from './data/CardData';
 import { ModalControl } from './components/modals/ModalControl';
 import { ParameterEditorPanel } from './components/panels/ParameterEditorPanel';
 import { EventEditorPanel } from './components/EventEditorPanel';
-import { useGenericLazyUpdate } from './LazyUpdate';
+import { useGenericLazyUpdate, useLazyEffect } from './LazyUpdate';
 import { exportGameWorld } from './io/export';
 
 initializeIcons();
@@ -64,16 +64,11 @@ export const App: React.FunctionComponent = () => {
     useEffect(() => {
         setData('settings', settings.settings);
     }, [settings]);
-    const [timer, setTimer] = useState<number | null>(null);
-    useEffect(() => {
-        if (timer !== null) clearTimeout(timer);
-        const timerHandle = window.setTimeout(() => {
-            const gameWorldId = 'game_world:' + settings.settings.exportTargetId;
-            const gameWorld = exportGameWorld({ cards, images, events });
-            setData(gameWorldId, gameWorld);
-        }, settings.settings.exportDelay);
-        setTimer(timerHandle);
-    }, [images, cards, events]);
+    useLazyEffect([images, cards, events], () => {
+        const gameWorldId = 'game_world:' + settings.settings.exportTargetId;
+        const gameWorld = exportGameWorld({ cards, images, events });
+        setData(gameWorldId, gameWorld);
+    }, settings.settings.exportDelay);
 
     return (
         <div>

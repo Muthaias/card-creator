@@ -45,3 +45,13 @@ export function useLazyUpdate<P>(
 ) {
     return useGenericLazyUpdate<P, string>(props, 1000, stateToSerializedData, equalityStatePropCompare, onChange);
 }
+
+
+export function useLazyEffect<T>(state: T[], action: () => void, delay: number = 1000) {
+    const [timer, setTimer] = useState<number | null>(null);
+    useEffect(() => {
+        if (timer !== null) clearTimeout(timer);
+        const timerHandle = window.setTimeout(action, delay);
+        setTimer(timerHandle);
+    }, state);
+}
