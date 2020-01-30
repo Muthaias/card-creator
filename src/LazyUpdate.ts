@@ -1,12 +1,26 @@
 import React, {useState, useEffect} from 'react';
 
-export function useLazyUpdate<P>(propData: P, onChange?: (state: P) => void, timeout: number = 1000) {
-    const [state, setState] = useState(propData);
+export function stateToSerializedData<P>(state: P): string[] {
+    return [JSON.stringify(state)];
+}
 
-    const serializedState = JSON.stringify(state);
-    const serializedPropData = JSON.stringify(propData);
+export function equalityStatePropCompare<D>(stateData: D[], propData: D[]): boolean {
+    return !stateData.some((value, index) => value !== propData[index]);
+}
+
+export function useGenericLazyUpdate<P, D>(
+    props: P,
+    timeout: number,
+    stateToData: (state: P) => D[],
+    compareData: (state: D[], props: D[]) => boolean,
+    onChange?: (state: P) => void,
+) {
+    const [state, setState] = useState(props);
+
+    const stateData = stateToData(state);
+    const propData = stateToData(props);
     useEffect(() => {
-        if (serializedState !== serializedPropData && onChange) {
+        if (!compareData(stateData, propData) && onChange) {
             const timer = setTimeout(() => {
                 if (onChange) onChange(state);
             }, timeout);
@@ -14,12 +28,20 @@ export function useLazyUpdate<P>(propData: P, onChange?: (state: P) => void, tim
                 clearTimeout(timer);
             }
         }
-    }, [serializedState]);
+    }, stateData);
     useEffect(() => {
-        if (serializedState !== serializedPropData) {
-            setState(propData);
+        if (!compareData(stateData, propData)) {
+            setState(props);
         }
-    }, [serializedPropData]);
+    }, propData);
 
     return [state, setState] as [P, React.Dispatch<React.SetStateAction<P>>];
+}
+
+export function useLazyUpdate<P>(
+    props: P,
+    onChange?: (state: P) => void,
+    timeout: number = 1000,
+) {
+    return useGenericLazyUpdate<P, string>(props, 1000, stateToSerializedData, equalityStatePropCompare, onChange);
 }
