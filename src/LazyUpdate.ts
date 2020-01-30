@@ -47,7 +47,7 @@ export function useLazyUpdate<P>(
 }
 
 
-export function useLazyEffect<T>(state: T[], action: () => void, delay: number = 1000) {
+export function useLazyEffect<T>(action: () => void, state: T[], delay: number = 1000) {
     const [timer, setTimer] = useState<number | null>(null);
     useEffect(() => {
         if (timer !== null) clearTimeout(timer);

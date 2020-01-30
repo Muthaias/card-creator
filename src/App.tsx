@@ -61,14 +61,19 @@ export const App: React.FunctionComponent = () => {
         (crud) => setData('events', crud.items()),
     );
     const nav = useNavigation();
+    const [exportStatus, setExportStatus] = useState(true);
     useEffect(() => {
         setData('settings', settings.settings);
     }, [settings]);
-    useLazyEffect([images, cards, events], () => {
+    useLazyEffect(() => {
         const gameWorldId = 'game_world:' + settings.settings.exportTargetId;
         const gameWorld = exportGameWorld({ cards, images, events });
         setData(gameWorldId, gameWorld);
-    }, settings.settings.exportDelay);
+        setExportStatus(true);
+    }, [images, cards, events], settings.settings.exportDelay);
+    useEffect(() => {
+        setExportStatus(false);
+    }, [images, cards, events]);
 
     return (
         <div>
@@ -81,15 +86,20 @@ export const App: React.FunctionComponent = () => {
                     }}
                     items={[
                         {
+                            key: 'data-saved',
+                            iconOnly: true,
+                            iconProps: {iconName: exportStatus ? 'EntitlementRedemption' : 'ChangeEntitlements'},
+                        },
+                        {
                             key: 'settings',
                             text: 'Settings',
                             onClick: () => nav.viewPanel('settings')
                         },
                         {
-                            key: '',
+                            key: 'export',
                             text: 'Export',
                             onClick: nav.exportGameWorld
-                        }
+                        },
                     ]}
                     farItems={[
                         {
