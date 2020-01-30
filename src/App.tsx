@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { initializeIcons, Stack, CommandBar, Layer, Text, Separator, Link } from 'office-ui-fabric-react';
 
 import { CardEditorPanel } from './components/CardEditorPanel';
@@ -13,6 +13,7 @@ import { ModalControl } from './components/modals/ModalControl';
 import { ParameterEditorPanel } from './components/panels/ParameterEditorPanel';
 import { EventEditorPanel } from './components/EventEditorPanel';
 import { useGenericLazyUpdate } from './LazyUpdate';
+import { exportGameWorld } from './io/export';
 
 initializeIcons();
 
@@ -63,6 +64,16 @@ export const App: React.FunctionComponent = () => {
     useEffect(() => {
         setData('settings', settings.settings);
     }, [settings]);
+    const [timer, setTimer] = useState<number | null>(null);
+    useEffect(() => {
+        if (timer !== null) clearTimeout(timer);
+        const timerHandle = window.setTimeout(() => {
+            const gameWorldId = 'game_world:' + settings.settings.exportTargetId;
+            const gameWorld = exportGameWorld({ cards, images, events });
+            setData(gameWorldId, gameWorld);
+        }, settings.settings.exportDelay);
+        setTimer(timerHandle);
+    }, [images, cards, events]);
 
     return (
         <div>
