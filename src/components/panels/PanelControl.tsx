@@ -6,6 +6,7 @@ import { CardListPanel } from './CardListPanel';
 import { ImageListPanel } from './ImageListPanel';
 import { Navigation } from '../../Navigation';
 import { EventListPanel } from './EventListPanel';
+import { SettingsPanel } from './SettingsPanel';
 
 type Props = {
     nav: Navigation;
@@ -44,9 +45,15 @@ export const PanelControl: React.FunctionComponent<Props> = ({nav}) => {
                     onEventSelected={(e) => nav.editEvent(e)}
                 />
             )
+        },
+        settings: {
+            title: 'Settings',
+            content: (
+                <SettingsPanel />
+            )
         }
     }), [nav]);
-    const panelContent = panelContentMap[panelId as ('parameters' | 'cards' | 'images' | 'events')];
+    const panelContent = panelContentMap[panelId as ('parameters' | 'cards' | 'images' | 'events' | 'settings')];
     return (
         <Panel
             headerText={panelContent ? panelContent.title : ''}

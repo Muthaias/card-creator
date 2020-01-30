@@ -6,12 +6,17 @@ function updateUrl(params: URLSearchParams) {
     window.history.pushState({ path: newurl }, '', newurl);
 }
 
+export type PanelId = (
+    'parameters' |
+    'images' |
+    'cards' |
+    'events' |
+    'settings'
+);
+
 export type Navigation = {
     exportGameWorld(): void;
-    viewParametersPanel(): void;
-    viewImagesPanel(): void;
-    viewCardsPanel(): void;
-    viewEventsPanel(): void;
+    viewPanel(panelId: PanelId): void;
     addImage(): void;
     addCard(): void;
     addEvent(): void;
@@ -42,10 +47,7 @@ export function useNavigation(): Navigation {
         }
         const navigation: Navigation = {
             exportGameWorld: () => setParam('modal', 'export_game_world'),
-            viewParametersPanel: () => setParam('panel', 'parameters'),
-            viewImagesPanel: () => setParam('panel', 'images'),
-            viewCardsPanel: () => setParam('panel', 'cards'),
-            viewEventsPanel: () => setParam('panel', 'events'),
+            viewPanel: (panelId: PanelId) => setParam('panel', panelId),
             addImage: () => setParam('modal', 'add_image'),
             addCard: () => setParam('modal', 'add_card'),
             addEvent: () => setParam('modal', 'add_event'),
