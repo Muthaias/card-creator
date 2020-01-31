@@ -3,6 +3,7 @@ import { Identity, NamedIdentity } from '../../Types';
 import { DocumentCardPreview } from 'office-ui-fabric-react';
 import { ImagesContext } from '../../Contexts';
 import { ItemListPanel } from './ItemListPanel';
+import { sharedDocumentCardPreviewStyle } from './Styles';
 
 type Props = {
     selectedImage?: Identity;
@@ -22,7 +23,7 @@ export const ImageListPanelCore: React.FunctionComponent<Props> = (props) => {
             title='Images'
             emptyInfo='No images added'
             renderPreview={(i) => (
-                <DocumentCardPreview previewImages={[{previewImageSrc: i.imageSrc, width: 144}]} />
+                <DocumentCardPreview previewImages={[{previewImageSrc: i.imageSrc, ...sharedDocumentCardPreviewStyle}]} />
             )}
             items={images}
             onRemoveItem={onRemoveImage}

@@ -1,8 +1,9 @@
 import React, { useContext, useMemo, useCallback } from 'react';
 import { Identity, NamedIdentity, CardType } from '../../Types';
-import { DocumentCardPreview, ImageFit } from 'office-ui-fabric-react';
+import { DocumentCardPreview } from 'office-ui-fabric-react';
 import { CardsContext, ImagesContext } from '../../Contexts';
 import { ItemListPanel } from './ItemListPanel';
+import { sharedDocumentCardPreviewStyle } from './Styles';
 
 type Props = {
     selectedCard?: Identity;
@@ -24,7 +25,7 @@ export const CardListPanelCore: React.FunctionComponent<Props> = (props) => {
                 title='Action Cards'
                 emptyInfo='No action cards added'
                 renderPreview={(i) => (
-                    <DocumentCardPreview previewImages={[{previewImageSrc: i.imageSrc, width: 144, height: 110, imageFit: ImageFit.centerContain}]} />
+                    <DocumentCardPreview previewImages={[{previewImageSrc: i.imageSrc, ...sharedDocumentCardPreviewStyle}]} />
                 )}
                 items={cards.filter(c => c.type !== CardType.Event)}
                 onItemSelected={onCardSelected}
@@ -35,7 +36,7 @@ export const CardListPanelCore: React.FunctionComponent<Props> = (props) => {
                 title='Event Cards'
                 emptyInfo='No event cards added'
                 renderPreview={(i) => (
-                    <DocumentCardPreview previewImages={[{previewImageSrc: i.imageSrc, width: 144, height: 110, imageFit: ImageFit.centerContain}]} />
+                    <DocumentCardPreview previewImages={[{previewImageSrc: i.imageSrc, ...sharedDocumentCardPreviewStyle}]} />
                 )}
                 items={cards.filter(c => c.type === CardType.Event)}
                 onItemSelected={onCardSelected}

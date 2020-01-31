@@ -3,6 +3,7 @@ import { Identity, NamedIdentity, ImageDescriptor } from '../../Types';
 import { DocumentCardPreview } from 'office-ui-fabric-react';
 import { EventsContext, CardsContext, ImagesContext } from '../../Contexts';
 import { ItemListPanel } from './ItemListPanel';
+import { sharedDocumentCardPreviewStyle } from './Styles';
 
 type Props = {
     selectedEvent?: Identity;
@@ -33,7 +34,7 @@ export const EventListPanelCore: React.FunctionComponent<Props> = (props) => {
                 title='Assigned Events'
                 emptyInfo='No assigned events'
                 renderPreview={(i) => (
-                    <DocumentCardPreview previewImages={[{previewImageSrc: i.card && i.card.imageSrc, width: 144}]} />
+                    <DocumentCardPreview previewImages={[{previewImageSrc: i.card && i.card.imageSrc, ...sharedDocumentCardPreviewStyle}]} />
                 )}
                 items={assignedEvents}
                 onRemoveItem={onRemoveEvent}
