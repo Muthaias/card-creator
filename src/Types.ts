@@ -41,11 +41,13 @@ export type CardDescriptor = NamedIdentity & {
     name: string;
     location: string;
     text: string;
+    weight: number;
     conditions: CardCondition[];
     actions: ActionData[];
 }
 
 export type EventDescriptor = NamedIdentity & {
+    weight: number;
     conditions: CardCondition[];
     initialCardId?: string;
 }

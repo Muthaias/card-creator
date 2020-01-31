@@ -50,6 +50,7 @@ export const ModalControl: React.FunctionComponent<Props> = ({nav, setData}) => 
                         conditions: [],
                         location: '',
                         actions: [],
+                        weight: 1,
                     });
                     nav.closeModal();
                 }}
@@ -63,6 +64,7 @@ export const ModalControl: React.FunctionComponent<Props> = ({nav, setData}) => 
                     const id = 'event-' + Date.now();
                     events.create({
                         id: id,
+                        weight: 1,
                         name: name,
                         conditions: [],
                     });

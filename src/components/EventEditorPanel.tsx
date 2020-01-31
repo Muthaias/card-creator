@@ -24,6 +24,7 @@ export const EventEditorPanelCore: React.FunctionComponent<Props> = ({
         id: 'event-' + Date.now(),
         name: '',
         conditions: [],
+        weight: 0
     },
     onChange = () => {}
 }) => {
@@ -83,13 +84,13 @@ export const EventEditorPanelCore: React.FunctionComponent<Props> = ({
                     onClick={addCondition}
                 />
             </Stack>
+            <Slider label="Probability" value={event.weight} min={0} max={1} step={0.1} onChange={(value) => updateEvent({
+                weight: value,
+            })}/>
             {event.conditions.length === 0 && <Stack horizontalAlign="center"><Text>No conditions added</Text></Stack>}
             {event.conditions.map((condition: CardCondition, index, conditions) => (
                 <Stack horizontal key={index} verticalAlign="center" tokens={stackTokens}>
                     <Stack styles={{root: {width: '100%'}}}>
-                        <Slider label="Probability" value={condition.weight} min={0} max={1} step={0.1} onChange={(value) => updateCondition(index, {
-                            weight: value,
-                        })}/>
                         <LazyItemEditor<[number, number]>
                             items={availableModifiers}
                             values={condition.values}

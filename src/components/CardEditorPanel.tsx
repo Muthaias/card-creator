@@ -39,6 +39,7 @@ export const CardEditorCore: React.FunctionComponent<Props> = ({
         text: "",
         conditions: [],
         actions: [],
+        weight: 1,
     } : props.card;
     const currentImage = availableImages.find(i => i.id === card.imageId);
 
@@ -140,13 +141,15 @@ export const CardEditorCore: React.FunctionComponent<Props> = ({
                     />
                 </Stack>
             )}
+            {card.type !== CardType.Event && (
+                <Slider label="Weight" min={0} max={1} step={0.1} value={card.weight} onChange={(value) => updateCard({
+                    weight: value,
+                })}/>
+            )}
             {card.type !== CardType.Event && card.conditions.length === 0 && <Stack horizontalAlign="center"><Text>No conditions added</Text></Stack>}
             {card.type !== CardType.Event && card.conditions.map((condition: CardCondition, index, conditions) => (
                 <Stack horizontal key={index} verticalAlign="center" tokens={stackTokens}>
                     <Stack styles={{root: {width: '100%'}}}>
-                        <Slider label="Weight" min={0} max={1} step={0.1} value={condition.weight} onChange={(value) => updateCondition(index, {
-                            weight: value,
-                        })}/>
                         <LazyItemEditor<[number, number]>
                             items={availableModifiers}
                             values={condition.values}
