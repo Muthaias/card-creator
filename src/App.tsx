@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { initializeIcons, Stack, CommandBar, Layer, Text, Separator, Link } from 'office-ui-fabric-react';
 
 import { CardEditorPanel } from './components/CardEditorPanel';
 import { PanelControl } from './components/panels/PanelControl';
-import { ImagesContext, ParametersContext, CardsContext, EventsContext } from './Contexts';
+import { ImagesContext, ParametersContext, CardsContext, EventsContext, SystemContext } from './Contexts';
 import { CardDescriptor, ImageDescriptor, ParameterDescriptor, ParameterType, EventDescriptor } from './Types'
 import { useItemCrud } from './ItemCrud';
 import { useSettings, Settings, SettingsContext } from './Settings';
@@ -12,8 +12,9 @@ import { imageDescriptors } from './data/CardData';
 import { ModalControl } from './components/modals/ModalControl';
 import { ParameterEditorPanel } from './components/panels/ParameterEditorPanel';
 import { EventEditorPanel } from './components/EventEditorPanel';
-import { useGenericLazyUpdate, useLazyEffect } from './LazyUpdate';
+import { useLazyEffect } from './LazyUpdate';
 import { exportGameWorld } from './io/export';
+import { createFileFunctions } from './io/file';
 
 initializeIcons();
 
@@ -33,33 +34,53 @@ function setData<T>(id: string, data: T) {
 
 export const App: React.FunctionComponent = () => {
     const settings = useSettings<Settings>(getData('settings') || {
-        exportTargetId: "default",
-        targetRestRoot: "",
-        downloadFileName: "swipeforfuture.ces.json",
+        exportTargetId: 'default',
+        targetRestRoot: '',
+        downloadFileName: 'swipeforfuture.ces.json',
         saveDelay: 5000,
         exportDelay: 5000,
     });
     const images = useItemCrud<ImageDescriptor>(
-        getData('images') || imageDescriptors,
+        () => getData('images') || imageDescriptors,
         (crud) => setData('images', crud.items()),
     );
     const parameters = useItemCrud<ParameterDescriptor>(
-        getData('parameters') || [
-            'Environment',
-            'People',
-            'Security',
-            'Money'
-        ].map(name => ({ id: name.toLowerCase().replace(/\s+/g, '-'), name: name, type: ParameterType.Value, systemParameter: true })),
+        () => (
+            getData('parameters') || [
+                'Environment',
+                'People',
+                'Security',
+                'Money'
+            ].map(name => ({ id: name.toLowerCase().replace(/\s+/g, '-'), name: name, type: ParameterType.Value, systemParameter: true }))
+        ),
         (crud) => setData('parameters', crud.items())
     );
     const cards = useItemCrud<CardDescriptor>(
-        getData('cards') || [],
+       () => getData('cards') || [],
         (crud) => setData('cards', crud.items()),
     );
     const events = useItemCrud<EventDescriptor>(
-        getData('events') || [],
+        () => getData('events') || [],
         (crud) => setData('events', crud.items()),
     );
+    const systemControl = useMemo(() => (
+        createFileFunctions<{
+            cards: CardDescriptor[],
+            events: EventDescriptor[],
+            parameters: ParameterDescriptor[],
+            images: ImageDescriptor[],
+        }>(() => ({
+            cards: cards.items(),
+            events: events.items(),
+            parameters: parameters.items(),
+            images: images.items(),
+        }), (data) => {
+            cards.load(data.cards);
+            events.load(data.events);
+            parameters.load(data.parameters);
+            images.load(data.images);
+        })
+    ), [cards, events, parameters, images]);
     const nav = useNavigation();
     const [exportStatus, setExportStatus] = useState(true);
     useEffect(() => {
@@ -81,7 +102,7 @@ export const App: React.FunctionComponent = () => {
                 <CommandBar
                     styles={{
                         root: {
-                            boxShadow: "0 2px 2px rgba(0, 0, 0, 0.2)"
+                            boxShadow: '0 2px 2px rgba(0, 0, 0, 0.2)'
                         }
                     }}
                     items={[
@@ -125,6 +146,7 @@ export const App: React.FunctionComponent = () => {
                     ]}
                 />
             </Layer>
+            <SystemContext.Provider value={systemControl}>
                 <ParametersContext.Provider value={parameters}>
                     <CardsContext.Provider value={cards}>
                         <ImagesContext.Provider value={images}>
@@ -161,6 +183,7 @@ export const App: React.FunctionComponent = () => {
                         </ImagesContext.Provider>
                     </CardsContext.Provider>
                 </ParametersContext.Provider>
+            </SystemContext.Provider>
         </div>
     );
 };

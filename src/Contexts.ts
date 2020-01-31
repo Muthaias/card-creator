@@ -41,3 +41,12 @@ export const ParametersContext = React.createContext<CrudContext<ParameterDescri
         ].map(name => ({id: name.toLowerCase().replace(/\s+/g, '-'), name: name, type: ParameterType.Flag}))
     ])
 );
+
+export type SystemFunctions = {
+    loadFile(file: File): void;
+    downloadFile(name: string): void;
+};
+export const SystemContext = React.createContext<SystemFunctions>({
+    loadFile: () => {},
+    downloadFile: () => {},
+});

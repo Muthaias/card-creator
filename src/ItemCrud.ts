@@ -7,6 +7,7 @@ export type CrudContext<T> = {
     update: (item: Identity & Partial<T>) => void;
     create: (item: T) => void;
     delete: (item: Identity) => void;
+    load: (items: T[]) => void;
 }
 
 export function createtInitialCrudContext<T>(items: T[]): CrudContext<T> {
@@ -16,15 +17,20 @@ export function createtInitialCrudContext<T>(items: T[]): CrudContext<T> {
         update: () => {},
         create: () => {},
         delete: () => {},
+        load: () => {},
     };
 }
+
+function crudItemMap<T extends Identity>(items: T[]) {
+    return items.reduce((map, item: T) => {map.set(item.id, item); return map}, new Map<string, T>());
+} 
 
 export function createItemCrud<T extends Identity> (items: T[], listener?: () => void): CrudContext<T> & {listener?: () => void} {
     const itemCrud: CrudContext<T> & {
         listener?: () => void;
         itemMap: Map<string, T>;
     } = {
-        itemMap: items.reduce((map, item: T) => {map.set(item.id, item); return map}, new Map<string, T>()),
+        itemMap: crudItemMap(items),
         items: function () {
             return Array.from(this.itemMap.values());
         },
@@ -44,6 +50,10 @@ export function createItemCrud<T extends Identity> (items: T[], listener?: () =>
             this.itemMap.delete(item.id)
             if (this.listener) this.listener();
         },
+        load: function (items: T[]) {
+            this.itemMap = crudItemMap(items);
+            if (this.listener) this.listener();
+        },
         listener: listener
     }
     itemCrud.update = itemCrud.update.bind(itemCrud);
@@ -51,13 +61,14 @@ export function createItemCrud<T extends Identity> (items: T[], listener?: () =>
     itemCrud.delete = itemCrud.delete.bind(itemCrud);
     itemCrud.get = itemCrud.get.bind(itemCrud);
     itemCrud.items = itemCrud.items.bind(itemCrud);
+    itemCrud.load = itemCrud.load.bind(itemCrud);
 
     return itemCrud;
 }
 
-export function useItemCrud<T extends Identity>(initialItems: T[], itemListener?: (items: CrudContext<T>) => void): CrudContext<T> & {listener?: () => void} {
+export function useItemCrud<T extends Identity>(initialItems: () => T[], itemListener?: (items: CrudContext<T>) => void): CrudContext<T> & {listener?: () => void} {
     const [items, setItems] = useState(
-        createItemCrud<T>(initialItems)
+        () => createItemCrud<T>(initialItems())
     );
     useEffect(() => {
         if (!items.listener) {
