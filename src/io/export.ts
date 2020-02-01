@@ -80,16 +80,15 @@ const exportEventCard = ({
 }): SFF.EventCard => {
     const description = exportCardDescription({card, images, index: 0});
 
-    const [
-        leftAction = defaultAction,
-        rightAction = defaultAction
-    ] = card.actions.map(exportAction);
+    
+    const leftAction = card.actions.find((action) => action.actionId.toLowerCase() === 'left');
+    const rightAction = card.actions.find((action) => action.actionId.toLowerCase() === 'right');
     
     return Object.assign(description, {
         type: 'event' as 'event',
         actions: {
-            left: leftAction,
-            right: rightAction
+            left: leftAction ? exportAction(leftAction) : defaultAction,
+            right: rightAction ? exportAction(rightAction) : defaultAction,
         }
     });
 }
