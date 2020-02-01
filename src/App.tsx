@@ -56,7 +56,7 @@ export const App: React.FunctionComponent = () => {
         (crud) => setData('parameters', crud.items())
     );
     const cards = useItemCrud<CardDescriptor>(
-       () => getData('cards') || [],
+        () => getData('cards') || [],
         (crud) => setData('cards', crud.items()),
     );
     const events = useItemCrud<EventDescriptor>(
