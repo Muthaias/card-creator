@@ -89,6 +89,7 @@ export const App: React.FunctionComponent = () => {
     useLazyEffect(() => {
         const gameWorldId = 'game_world:' + settings.settings.exportTargetId;
         const gameWorld = exportGameWorld({ cards, images, events });
+        console.log(gameWorld);
         setData(gameWorldId, gameWorld);
         setExportStatus(true);
     }, [images, cards, events], settings.settings.exportDelay);

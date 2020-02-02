@@ -41,7 +41,7 @@ export const ModalControl: React.FunctionComponent<Props> = ({nav, setData}) => 
             title: 'Add Card',
             content: <AddCardModal
                 onAddCard={(name: string) => {
-                    const id = 'image-' + Date.now();
+                    const id = 'card-' + Date.now();
                     cards.create({
                         id: id,
                         type: CardType.Action,

@@ -20,7 +20,7 @@ export const exportGameWorld = ({
     const eventCards = cardItems.filter(card => (
         card.type === CardType.Event
     )).map(card => exportEventCard({card, images})).reduce<{[x: string]: SFF.EventCard}>((cardMap, card) => {cardMap[card.id] = card; return cardMap}, {});
-    const eventData = eventItems.map(event => exportEvent({event, cards})).reduce((acc, eventCardGroup) => acc.concat(eventCardGroup), []);
+    const eventData = eventItems.map(event => exportEvent({event})).reduce((acc, eventCardGroup) => acc.concat(eventCardGroup), []);
 
     const worldData = {
         cards: actionCards,
@@ -48,24 +48,21 @@ const exportActionCard = ({
     card: CardDescriptor,
     images: CrudContext<ImageDescriptor>
 }): SFF.CardData[] => {
-    const description = exportCardDescription({card, images, index: 0});
+    const description = exportCardDescription({card, images});
 
-    const [
-        leftAction = defaultAction,
-        rightAction = defaultAction
-    ] = card.actions.map(exportAction);
+    const [leftAction, rightAction] = getActions(card);
     
     return [
         Object.assign({}, description, {
-            id: identityToId(card),
+            id: card.id,
             type: 'card' as 'card',
             weight: card.weight,
             isAvailableWhen: card.conditions.length > 0 ? card.conditions.map(exportCondition) : [
                 defaultWorldQuery()
             ],
             actions: {
-                left: leftAction,
-                right: rightAction
+                left: leftAction ? exportAction(leftAction) : defaultAction,
+                right: rightAction ? exportAction(rightAction) : defaultAction,
             }
         })
     ]
@@ -78,17 +75,15 @@ const exportEventCard = ({
     card: CardDescriptor,
     images: CrudContext<ImageDescriptor>
 }): SFF.EventCard => {
-    const description = exportCardDescription({card, images, index: 0});
+    const description = exportCardDescription({card, images});
 
-    
-    const leftAction = card.actions.find((action) => action.actionId.toLowerCase() === 'left');
-    const rightAction = card.actions.find((action) => action.actionId.toLowerCase() === 'right');
+    const [leftAction, rightAction] = getActions(card);
     
     return Object.assign(description, {
         type: 'event' as 'event',
         actions: {
-            left: leftAction ? exportAction(leftAction) : defaultAction,
-            right: rightAction ? exportAction(rightAction) : defaultAction,
+            left: leftAction ? exportEventAction(leftAction) : defaultAction,
+            right: rightAction ? exportEventAction(rightAction) : defaultAction,
         }
     });
 }
@@ -96,11 +91,9 @@ const exportEventCard = ({
 export const exportCardDescription = ({
     card,
     images,
-    index
 }: {
     card: CardDescriptor,
     images?: CrudContext<ImageDescriptor>,
-    index: number
 }): SFF.CardDescription => {
     const image: ImageDescriptor =  images && images.get({id: card.imageId || ''}) || {
         id: '',
@@ -110,7 +103,7 @@ export const exportCardDescription = ({
     };
 
     return {
-        id: identityToId(card, index),
+        id: card.id,
         image: image.src,
         title: card.name,
         text: card.text,
@@ -134,6 +127,12 @@ const exportCondition = (condition: CardCondition): SFF.WorldQuery => {
     return worldQuery
 }
 
+const getActions = (card: CardDescriptor): [ActionData | undefined, ActionData | undefined] => {
+    const leftAction = card.actions.find((action) => action.actionId.toLowerCase() === 'left');
+    const rightAction = card.actions.find((action) => action.actionId.toLowerCase() === 'right');
+    return [leftAction, rightAction];
+}
+
 const exportAction = (action: ActionData): SFF.CardActionData => {
     return {
         description: action.description,
@@ -145,20 +144,23 @@ const exportAction = (action: ActionData): SFF.CardActionData => {
     }
 }
 
+const exportEventAction = (action: ActionData): SFF.EventCardActionData => {
+    const actionData: SFF.EventCardActionData = exportAction(action);
+    actionData.nextEventCardId = action.nextCardId;
+    return actionData;
+}
+
 const exportEvent = ({
     event,
-    cards,
 }: {
     event: EventDescriptor,
-    cards: CrudContext<CardDescriptor>
 }): SFF.WorldEvent[] => {
-    const card: NamedIdentity | null = (event.initialCardId === undefined ? undefined : cards.get({id: event.initialCardId})) || null;
-    return card === null ? [] : [{
+    return event.initialCardId === undefined ? [] : [{
         probability: event.weight,
         shouldTriggerWhen: event.conditions.length > 0 ? event.conditions.map(exportCondition) : [
             defaultWorldQuery()
         ],
-        initialEventCardId: identityToId(card, 0),
+        initialEventCardId: event.initialCardId,
     }];
 }
 
@@ -166,7 +168,3 @@ const exportEvent = ({
 const defaultAction: SFF.CardActionData = {
     modifier: {}
 };
-
-const identityToId = (identity: NamedIdentity, index?: number): string => {
-    return identity.name + ":" + identity.id + (index === undefined ? '' : '[' + index + ']');
-}
