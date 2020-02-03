@@ -95,7 +95,7 @@ export const exportCardDescription = ({
     card: CardDescriptor,
     images?: CrudContext<ImageDescriptor>,
 }): SFF.CardDescription => {
-    const image: ImageDescriptor =  images && images.get({id: card.imageId || ''}) || {
+    const image: ImageDescriptor =  images && images.read({id: card.imageId || ''}) || {
         id: '',
         name: '',
         src: '',

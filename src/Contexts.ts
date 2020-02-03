@@ -10,26 +10,26 @@ import {
 } from './Types';
 import {
     CrudContext,
-    createtInitialCrudContext,
+    createInitialCrudContext,
 } from './ItemCrud';
 
 
 export const ActionsContext = React.createContext<CrudContext<ActionDescriptor>>(
-    createtInitialCrudContext<ActionDescriptor>(
+    createInitialCrudContext<ActionDescriptor>(
         ['Left', 'Right'].map(name => ({id: name.toLowerCase(), name: name}))
     )
 );
 export const ImagesContext = React.createContext<CrudContext<ImageDescriptor>>(
-    createtInitialCrudContext<ImageDescriptor>([])
+    createInitialCrudContext<ImageDescriptor>([])
 );
 export const CardsContext = React.createContext<CrudContext<CardDescriptor>>(
-    createtInitialCrudContext<CardDescriptor>([])
+    createInitialCrudContext<CardDescriptor>([])
 );
 export const EventsContext = React.createContext<CrudContext<EventDescriptor>>(
-    createtInitialCrudContext<EventDescriptor>([])
+    createInitialCrudContext<EventDescriptor>([])
 )
 export const ParametersContext = React.createContext<CrudContext<ParameterDescriptor>>(
-    createtInitialCrudContext([
+    createInitialCrudContext([
         ...[
             'Environment',
             'People',

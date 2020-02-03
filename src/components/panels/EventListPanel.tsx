@@ -69,10 +69,10 @@ export const EventListPanel: React.FunctionComponent<EventListPanelProps> = ({
     const cards = useContext(CardsContext);
     const images = useContext(ImagesContext);
     const getCardData = (cardId: string) => {
-        const card = cards.get({id: cardId});
+        const card = cards.read({id: cardId});
         const image: ImageDescriptor | undefined = (
             card !== undefined && card.imageId !== undefined
-        ) ? images.get({id: card.imageId}) : undefined;
+        ) ? images.read({id: card.imageId}) : undefined;
         return card === undefined ? undefined : {
             id: card.id,
             name: card.name,

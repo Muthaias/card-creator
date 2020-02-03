@@ -1,19 +1,19 @@
-import { useState, useEffect } from 'react';
-import { Identity } from './Types';
+import { useState, useEffect, useMemo } from 'react';
+import { Identity, Unidentified } from './Types';
 
 export type CrudContext<T> = {
     items: () => T[];
-    get: (item: Identity) => T | undefined;
+    read: (item: Identity) => T | undefined;
     update: (item: Identity & Partial<T>) => void;
-    create: (item: T) => void;
+    create: (item: Unidentified<T>) => void;
     delete: (item: Identity) => void;
     load: (items: T[]) => void;
 }
 
-export function createtInitialCrudContext<T>(items: T[]): CrudContext<T> {
+export function createInitialCrudContext<T>(items: T[]): CrudContext<T> {
     return {
         items: () => items,
-        get: (item: Identity) => undefined,
+        read: (item: Identity) => undefined,
         update: () => {},
         create: () => {},
         delete: () => {},
@@ -23,11 +23,10 @@ export function createtInitialCrudContext<T>(items: T[]): CrudContext<T> {
 
 function crudItemMap<T extends Identity>(items: T[]) {
     return items.reduce((map, item: T) => {map.set(item.id, item); return map}, new Map<string, T>());
-} 
+}
 
-export function createItemCrud<T extends Identity> (items: T[], listener?: () => void): CrudContext<T> & {listener?: () => void} {
+export function createItemCrud<T extends Identity> (items: T[], idGenerator: () => string): CrudContext<T> {
     const itemCrud: CrudContext<T> & {
-        listener?: () => void;
         itemMap: Map<string, T>;
     } = {
         itemMap: crudItemMap(items),
@@ -37,49 +36,49 @@ export function createItemCrud<T extends Identity> (items: T[], listener?: () =>
         update: function (item) {
             const currentItem = this.itemMap.get(item.id);
             Object.assign(currentItem, item);
-            if (this.listener) this.listener();
         },
-        get: function(item: Identity) {
+        read: function(item: Identity) {
             return this.itemMap.get(item.id);
         },
         create: function (item) {
-            this.itemMap.set(item.id, item);
-            if (this.listener) this.listener();
+            const newItem: T = Object.assign({}, item as T, {id: idGenerator()});
+            this.itemMap.set(newItem.id, newItem);
         },
         delete: function (item) {
             this.itemMap.delete(item.id)
-            if (this.listener) this.listener();
         },
         load: function (items: T[]) {
             this.itemMap = crudItemMap(items);
-            if (this.listener) this.listener();
         },
-        listener: listener
     }
-    itemCrud.update = itemCrud.update.bind(itemCrud);
-    itemCrud.create = itemCrud.create.bind(itemCrud);
-    itemCrud.delete = itemCrud.delete.bind(itemCrud);
-    itemCrud.get = itemCrud.get.bind(itemCrud);
-    itemCrud.items = itemCrud.items.bind(itemCrud);
-    itemCrud.load = itemCrud.load.bind(itemCrud);
 
     return itemCrud;
 }
 
-export function useItemCrud<T extends Identity>(initialItems: () => T[], itemListener?: (items: CrudContext<T>) => void): CrudContext<T> & {listener?: () => void} {
+export function useItemCrud<T extends Identity>(initialItems: () => T[], itemListener?: (items: CrudContext<T>) => void, itemId: string = 'item'): CrudContext<T> {
+    let itemCount = 0;
     const [items, setItems] = useState(
-        () => createItemCrud<T>(initialItems())
+        () => createItemCrud<T>(initialItems(), () => [itemId, Date.now(), itemCount++].join('-'))
     );
     useEffect(() => {
-        if (!items.listener) {
-            items.listener = function () {
-                setItems(Object.assign({}, this));
-                if (itemListener) itemListener(this);
-            }
-            setItems(Object.assign({}, items));
+        if (itemListener) {
+            itemListener(items);
         }
-    }, [items.listener]);
-    return items;
+    }, [items, itemListener]);
+    
+    return useMemo(() => {
+        const updateItems = () => {
+            setItems(Object.assign({}, items));
+        };
+        return {
+            items: () => items.items(),
+            read: (item) => items.read(item),
+            update: (item) => {items.update(item); updateItems();},
+            create: (item) => {items.create(item); updateItems();},
+            delete: (item) => {items.delete(item); updateItems();},
+            load: (item) => {items.load(item); updateItems();}
+        };
+    }, [items]);
 }
 
 export function useManager<M>(initialManager: M & {listener?: (manager: M) => void}): M & {listener?: (manager: M) => void} {

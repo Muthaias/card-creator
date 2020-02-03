@@ -43,6 +43,7 @@ export const App: React.FunctionComponent = () => {
     const images = useItemCrud<ImageDescriptor>(
         () => getData('images') || imageDescriptors,
         (crud) => setData('images', crud.items()),
+        'image'
     );
     const parameters = useItemCrud<ParameterDescriptor>(
         () => (
@@ -53,15 +54,18 @@ export const App: React.FunctionComponent = () => {
                 'Money'
             ].map(name => ({ id: name.toLowerCase().replace(/\s+/g, '-'), name: name, type: ParameterType.Value, systemParameter: true }))
         ),
-        (crud) => setData('parameters', crud.items())
+        (crud) => setData('parameters', crud.items()),
+        'param'
     );
     const cards = useItemCrud<CardDescriptor>(
         () => getData('cards') || [],
         (crud) => setData('cards', crud.items()),
+        'card'
     );
     const events = useItemCrud<EventDescriptor>(
         () => getData('events') || [],
         (crud) => setData('events', crud.items()),
+        'event'
     );
     const systemControl = useMemo(() => (
         createFileFunctions<{

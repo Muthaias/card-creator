@@ -25,9 +25,7 @@ export const ModalControl: React.FunctionComponent<Props> = ({nav, setData}) => 
             title: 'Add Image',
             content: <AddImageModal
                 onAddImage={(name, src) => {
-                    const id = 'image-' + Date.now();
                     images.create({
-                        id: id,
                         name: name,
                         src: src,
                         tags: [],
@@ -41,9 +39,7 @@ export const ModalControl: React.FunctionComponent<Props> = ({nav, setData}) => 
             title: 'Add Card',
             content: <AddCardModal
                 onAddCard={(name: string) => {
-                    const id = 'card-' + Date.now();
                     cards.create({
-                        id: id,
                         type: CardType.Action,
                         name: name,
                         text: '',
@@ -61,9 +57,7 @@ export const ModalControl: React.FunctionComponent<Props> = ({nav, setData}) => 
             title: 'Add Event',
             content: <AddEventModal
                 onAddEvent={(name: string) => {
-                    const id = 'event-' + Date.now();
                     events.create({
-                        id: id,
                         weight: 1,
                         name: name,
                         conditions: [],

@@ -2,6 +2,8 @@ export type Identity = {
     id: string;
 }
 
+export type Unidentified<T> = Pick<T, Exclude<keyof T, keyof Identity>>;
+
 export type NamedIdentity = Identity & {
     name: string;
 }

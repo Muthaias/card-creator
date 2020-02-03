@@ -152,7 +152,7 @@ export const EventEditorPanel: React.FunctionComponent<EventEditorPanelProps> = 
     const cards = useContext(CardsContext);
     const events = useContext(EventsContext);
 
-    const currentEvent = events.get({id: eventId});
+    const currentEvent = events.read({id: eventId});
 
     const availableModifiers = parameters.items().filter(p => p.type === ParameterType.Value);
     const availableFlags = parameters.items().filter(p => p.type === ParameterType.Flag);
