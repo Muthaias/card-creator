@@ -12,6 +12,7 @@ import {
 } from '../Contexts';
 import { ActionDescriptor, ActionData, ParameterDescriptor, ParameterType, CardDescriptor, CardCondition, ImageDescriptor, CardType } from '../Types';
 import { LazyTextField } from './LazyTextField';
+import { createCardUpdater } from '../system/Card';
 
 type Props = {
     availableModifiers: ItemDescriptor[];
@@ -19,7 +20,7 @@ type Props = {
     availableActions: ActionDescriptor[];
     availableImages: ImageDescriptor[];
     availableCards: CardDescriptor[];
-    card?: CardDescriptor;
+    card: CardDescriptor;
     onChange?: (card: CardDescriptor) => void;
 }
 
@@ -29,60 +30,19 @@ export const CardEditorCore: React.FunctionComponent<Props> = ({
     availableActions,
     availableImages,
     availableCards,
-    ...props
+    card,
+    onChange = () => {}
 }) => {
-    const card: CardDescriptor = props.card === undefined ? {
-        id: "card-" + Date.now(),
-        type: CardType.Action,
-        name: "",
-        location: "",
-        text: "",
-        conditions: [],
-        actions: [],
-        weight: 1,
-    } : props.card;
     const currentImage = availableImages.find(i => i.id === card.imageId);
 
-    const onChange: (card: CardDescriptor) => void = props.onChange === undefined ? (
-        () => {}
-    ) : props.onChange;
+    const {
+        updateCard,
+        addCondition,
+        updateCondition,
+        removeCondition,
+        updateAction,
+    } = createCardUpdater(card, onChange);
 
-    const updateCard = (info: Partial<CardDescriptor>) => {
-        onChange(Object.assign({}, card, info));
-    }
-
-    const addCondition = () => {
-        updateCard({conditions: [
-            ...card.conditions, {
-                weight: 0,
-                values: {},
-                flags: {}
-            }
-        ]});
-    };
-
-    const updateCondition = (index: number, newCondition: Partial<CardCondition>) => {
-        updateCard({
-            conditions: card.conditions.map((c, i) => i === index ? Object.assign({}, c, newCondition) : c),
-        });
-    }
-
-    const removeCondition = (index: number) => {
-        const conditions = [...card.conditions];
-        conditions.splice(index);
-        updateCard({
-            conditions: conditions,
-        });
-    }
-
-    const updateAction = (actionData: ActionData) => {
-        updateCard({
-            actions: [
-                ...card.actions.filter(a => a.actionId !== actionData.actionId),
-                actionData,
-            ]
-        });
-    }
     const cardTypeMap: [string, CardType][] = [
         ['Action', CardType.Action],
         ['Event', CardType.Event],
@@ -252,9 +212,13 @@ export const CardEditorPanel: React.FunctionComponent<{cardId: string}> = ({card
     const availableFlags = parameters.items().filter(p => p.type === ParameterType.Flag);
     const currentCard = cards.items().find(c => c.id === cardId);
     const availableCards = cards.items().filter(c => c.type === CardType.Event && c.id !== cardId);
-    return cardId && currentCard === undefined ? (
+    return currentCard === undefined ? (
         <Stack horizontalAlign='center'>
-            <Text>Card with card id '{cardId}' could not be found.</Text>
+            {cardId ? (
+                <Text>Card with card id '{cardId}' could not be found.</Text>
+            ) : (
+                <Text>No card selected.</Text>
+            )}
         </Stack>
     ) : (
         <CardEditorCore 

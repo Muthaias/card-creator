@@ -1,18 +1,19 @@
 import React, { useContext } from 'react';
 import { Text, Slider, Toggle, Separator, IconButton, Dropdown } from 'office-ui-fabric-react';
-import { EventDescriptor, ParameterDescriptor, CardCondition, ParameterType, CardType, CardDescriptor } from '../Types';
+import { EventDescriptor, ParameterDescriptor, CardCondition, ParameterType, CardType, CardDescriptor, Unidentified } from '../Types';
 import { ItemDescriptor, LazyItemEditor } from './ItemEditor';
 import { Stack } from 'office-ui-fabric-react';
 import { LazyTextField } from './LazyTextField';
 import { stackTokens } from '../Styling';
 import { Range } from './Range';
-import { ActionsContext, ParametersContext, CardsContext, EventsContext } from '../Contexts';
+import { ParametersContext, CardsContext, EventsContext } from '../Contexts';
+import { createEventUpdater } from '../system/Event';
 
 type Props = {
     availableModifiers: ItemDescriptor[];
     availableFlags: ParameterDescriptor[];
     availableCards: CardDescriptor[];
-    event?: EventDescriptor;
+    event: EventDescriptor;
     onChange: (event: EventDescriptor) => void;
 }
 
@@ -20,41 +21,16 @@ export const EventEditorPanelCore: React.FunctionComponent<Props> = ({
     availableModifiers,
     availableFlags,
     availableCards,
-    event = {
-        id: 'event-' + Date.now(),
-        name: '',
-        conditions: [],
-        weight: 0
-    },
+    event,
     onChange = () => {}
 }) => {
-    const updateEvent = (info: Partial<EventDescriptor>) => {
-        onChange(Object.assign({}, event, info));
-    }
+    const {
+        updateEvent,
+        addCondition,
+        removeCondition,
+        updateCondition,
+    } = createEventUpdater(event, onChange);
 
-    const addCondition = () => {
-        updateEvent({conditions: [
-            ...event.conditions, {
-                weight: 0,
-                values: {},
-                flags: {}
-            }
-        ]});
-    };
-
-    const removeCondition = (index: number) => {
-        const conditions = [...event.conditions];
-        conditions.splice(index);
-        updateEvent({
-            conditions: conditions,
-        });
-    }
-
-    const updateCondition = (index: number, newCondition: Partial<CardCondition>) => {
-        updateEvent({
-            conditions: event.conditions.map((c, i) => i === index ? Object.assign({}, c, newCondition) : c),
-        });
-    }
     return (
         <Stack
             tokens={stackTokens}
@@ -157,9 +133,13 @@ export const EventEditorPanel: React.FunctionComponent<EventEditorPanelProps> = 
     const availableModifiers = parameters.items().filter(p => p.type === ParameterType.Value);
     const availableFlags = parameters.items().filter(p => p.type === ParameterType.Flag);
     const availableCards = cards.items().filter(c => c.type === CardType.Event);
-    return eventId && currentEvent === undefined ? (
+    return currentEvent === undefined ? (
         <Stack horizontalAlign='center'>
-            <Text>Event with event id '{eventId}' could not be found.</Text>
+            {eventId ? (
+                <Text>Event with event id '{eventId}' could not be found.</Text>
+            ) : (
+                <Text>No event selected</Text>
+            )}
         </Stack>
     ) : (
         <EventEditorPanelCore
