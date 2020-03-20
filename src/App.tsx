@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { initializeIcons, Stack, CommandBar, Layer, Text, Separator, Link } from 'office-ui-fabric-react';
+import { Stack, CommandBar, Layer, Text, Separator, Link } from 'office-ui-fabric-react';
 
 import { CardEditorPanel } from './components/CardEditorPanel';
 import { PanelControl } from './components/panels/PanelControl';
@@ -15,8 +15,6 @@ import { EventEditorPanel } from './components/EventEditorPanel';
 import { useLazyEffect } from './LazyUpdate';
 import { exportGameWorld } from './io/export';
 import { createFileFunctions } from './io/file';
-
-initializeIcons();
 
 function getData<T>(id: string): T | null {
     const blob = window.localStorage.getItem(id);

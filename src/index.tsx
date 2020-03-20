@@ -1,7 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { App } from './App';
-import { mergeStyles } from 'office-ui-fabric-react';
+import { mergeStyles, registerIcons, loadTheme } from 'office-ui-fabric-react';
+import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome';
+import { faTrashAlt, faPlusCircle, faEdit, faSave, faFolderOpen, faFile, faFileExport, faTimes } from '@fortawesome/free-solid-svg-icons';
 
 // Inject some global styles
 mergeStyles({
@@ -15,6 +17,25 @@ mergeStyles({
       marginTop: "25px"
     }
   }
+});
+
+registerIcons({
+  icons: {
+      'EntitlementRedemption': <Icon icon={faFile} />,
+      'ChangeEntitlements': <Icon icon={faFileExport} />,
+      'Add': <Icon icon={faPlusCircle} />,
+      'Trash': <Icon icon={faTrashAlt} />,
+      'Edit': <Icon icon={faEdit} />,
+      'Save': <Icon icon={faSave} />,
+      'OpenFile': <Icon icon={faFolderOpen} />,
+      'Cancel': <Icon icon={faTimes} />
+  },
+});
+
+loadTheme({
+  defaultFontStyle: {
+      fontFamily: 'Selawik, Verdana, Arial'
+  },
 });
 
 ReactDOM.render(<App />, document.getElementById('app'));
