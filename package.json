@@ -13,9 +13,9 @@
     "gen": "npx plop"
   },
   "dependencies": {
-    "office-ui-fabric-react": "^7.0.0",
-    "react": "^16.8.6",
-    "react-dom": "^16.8.6"
+    "office-ui-fabric-react": "^7.105.1",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1"
   },
   "devDependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.27",
