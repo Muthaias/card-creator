@@ -13,7 +13,7 @@
     "gen": "npx plop"
   },
   "dependencies": {
-    "exceljs": "^3.8.2",
+    "exceljs": "^3.8.1",
     "office-ui-fabric-react": "^7.105.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"

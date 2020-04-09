@@ -43,10 +43,12 @@ export const ParametersContext = React.createContext<CrudContext<ParameterDescri
 );
 
 export type SystemFunctions = {
-    loadFile(file: File): void;
-    downloadFile(name: string): void;
+    loadJSON(file: File): void;
+    loadExcel(file: File): void;
+    downloadJSON(name: string): void;
 };
 export const SystemContext = React.createContext<SystemFunctions>({
-    loadFile: () => {},
-    downloadFile: () => {},
+    loadJSON: () => {},
+    loadExcel: () => {},
+    downloadJSON: () => {},
 });

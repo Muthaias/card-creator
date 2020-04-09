@@ -81,6 +81,10 @@ export const App: React.FunctionComponent = () => {
             events.load(data.events);
             parameters.load(data.parameters);
             images.load(data.images);
+        }, (data) => {
+            cards.load(data);
+        }, (error) => {
+            console.error(error);
         })
     ), [cards, events, parameters, images]);
     const nav = useNavigation();

@@ -7,6 +7,7 @@ import { SystemContext } from '../../Contexts';
 type Props = Settings & {
     update: React.Dispatch<Partial<Settings>>,
     load: (file: File) => void;
+    loadExcel: (file: File) => void;
     save: (name: string) => void;
 };
 
@@ -19,11 +20,9 @@ export const SettingsEditorCore: React.FunctionComponent<Props> = (props) => {
         exportDelay,
         update,
         load,
+        loadExcel,
         save,
     } = props;
-
-    const [file, setFile] = useState<File | null>(null);
-    const fileRef = useRef<HTMLInputElement>(null);
 
     const ioGroup: ([string, keyof Props, string])[] = [
         ['Export Target ID', 'exportTargetId', exportTargetId],
@@ -34,12 +33,6 @@ export const SettingsEditorCore: React.FunctionComponent<Props> = (props) => {
         ['Save Delay', 'saveDelay', saveDelay],
         ['Export Delay', 'exportDelay', exportDelay],
     ];
-    useEffect(() => {
-        if (file) {
-            update({downloadFileName: file.name});
-            load(file);
-        }
-    }, [file]);
 
     return (
         <Stack tokens={stackTokens} styles={{root: {width: '100%'}}}>
@@ -53,26 +46,19 @@ export const SettingsEditorCore: React.FunctionComponent<Props> = (props) => {
                     onChange={(_, newValue) => newValue !== undefined && update({[key]: newValue})}
                 />
             ))}
-            <input
-                type='file'
-                ref={fileRef}
-                style={{display: 'none'}}
-                onChange={(event) => event.target && event.target.files && setFile(event.target.files[0])
-            }/>
             <Separator styles={{root: {width: '100%'}}}>File Operations</Separator>
             <DefaultButton
                 onClick={() => save(downloadFileName)}
                 text='Download data'
                 iconProps={{iconName: 'Save'}}
             />
-            <DefaultButton
-                onClick={() => {
-                    const current = fileRef.current;
-                    if (current) current.click();
-                }}
-                text={file ? file.name : 'Select a file to load'}
-                iconProps={{iconName: 'OpenFile'}}
-            />
+            <FileUpload text='Select an excel file to load' onSelect={(file: File) => {
+                loadExcel(file);
+            }}/>
+            <FileUpload text='Select a JSON file to load' onSelect={(file: File) => {
+                update({downloadFileName: file.name});
+                load(file);
+            }}/>
             <Separator styles={{root: {width: '100%'}}}>Timings</Separator>
             {timingsGroup.map(([name, key, value]) => (
                 <TextField
@@ -87,11 +73,45 @@ export const SettingsEditorCore: React.FunctionComponent<Props> = (props) => {
         </Stack>
     );
 }
+type FileUploadProps = {
+    onSelect: (file: File) => void;
+    text: string;
+};
+
+const FileUpload: React.FunctionComponent<FileUploadProps> = ({onSelect, text}: FileUploadProps) => {
+    const [file, setFile] = useState<File | null>(null);
+    const fileRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        if (file) {
+            onSelect(file)
+        }
+    }, [file]);
+
+    return (
+        <>
+            <input
+                type='file'
+                ref={fileRef}
+                style={{display: 'none'}}
+                onChange={(event) => event.target && event.target.files && setFile(event.target.files[0])
+            }/>
+            <DefaultButton
+                onClick={() => {
+                    const current = fileRef.current;
+                    if (current) current.click();
+                }}
+                text={file ? file.name : text}
+                iconProps={{iconName: 'OpenFile'}}
+            />
+        </>
+    );
+}
 
 export const SettingsPanel: React.FunctionComponent<{}> = () => {
     const settings = useContext(SettingsContext);
     const system = useContext(SystemContext);
     return (
-        <SettingsEditorCore {...settings.settings} update={settings.update} load={system.loadFile} save={system.downloadFile}/>
+        <SettingsEditorCore {...settings.settings} update={settings.update} load={system.loadJSON} loadExcel={system.loadExcel} save={system.downloadJSON}/>
     );
 }

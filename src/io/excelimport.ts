@@ -1,11 +1,11 @@
 import ExcelJS from 'exceljs';
-import {CardDescriptor} from '../Types';
+import {CardDescriptor, CardType, ModifierType} from '../Types';
 
-export function excelToSimplifiedCardData(data: ExcelJS.Buffer, cardSheetId = 'initial_card_set', useColumnHeader = false): Partial<SimplifiedCardData>[] {
+export async function excelToSimplifiedCardData(data: ExcelJS.Buffer, cardSheetId = 'initial_card_set', useColumnHeader = true): Promise<Partial<SimplifiedCardData>[]> {
     const workbook = new ExcelJS.Workbook();
-    workbook.xlsx.load(data);
+    await workbook.xlsx.load(data);
 
-    const cardSheet = workbook.getWorksheet('initial_card_set');
+    const cardSheet = workbook.worksheets.find(ws => ws.name === cardSheetId);
     
     const columnNumberToId: {[x: number]: keyof SimplifiedCardData} = {
         0: 'id',
@@ -14,31 +14,90 @@ export function excelToSimplifiedCardData(data: ExcelJS.Buffer, cardSheetId = 'i
     
     const cards: Partial<SimplifiedCardData>[] = [];
 
-    cardSheet.eachRow((row, rowNumber) => {
-        if (rowNumber === 0 && useColumnHeader) {
-            row.eachCell((cell, colNumber) => {
-                columnNumberToId[colNumber] = cell.value as keyof SimplifiedCardData;
-            });
-        } else {
-            const card: Partial<SimplifiedCardData> = {};
-            row.eachCell({includeEmpty: true}, (cell, colNumber) => {
-                const propId = columnNumberToId[colNumber];
-                card[propId] = cell as any;
-            });
-            cards.push(card);
-        }
-    });
+    if (cardSheet) {
+        cardSheet.eachRow((row, rowNumber) => {
+            if (rowNumber === 1 && useColumnHeader) {
+                row.eachCell((cell, colNumber) => {
+                    columnNumberToId[colNumber] = cell.value as keyof SimplifiedCardData;
+                });
+            } else {
+                const card: Partial<SimplifiedCardData> = {};
+                row.eachCell({includeEmpty: true}, (cell, colNumber) => {
+                    const propId = columnNumberToId[colNumber];
+                    card[propId] = cell.value as any;
+                });
+                cards.push(card);
+            }
+        });
+    }
         
     return cards
 }
 
-
 export function importSimplifiedCardData(data: SimplifiedCardData[]): CardDescriptor[] {
+    const cards: CardDescriptor[] = data.map<CardDescriptor>(({ id, next_left_id, next_right_id, location, name, text, left, right, environment_left, environment_right, people_left, people_right, security_left, security_right, money_left, money_right, popularity_left, popularity_right, }, index) => ({
+        id: id || ('excelcard_' + index + '_' +  Date.now()),
+        name: name,
+        text,
+        type: next_left_id || next_right_id ? CardType.Event : CardType.Action,
+        location,
+        weight: 1,
+        conditions: [],
+        actions: [
+            {
+                actionId: 'left',
+                description: left,
+                modifierType: 'add' as ModifierType,
+                values: {
+                    environment: environment_left,
+                    people: people_left,
+                    security: security_left,
+                    money: money_left,
+                    popularity: popularity_left
+                },
+                flags: {},
+                nextCardId: next_left_id
+            }, {
+                actionId: 'right',
+                description: right,
+                modifierType: 'add' as ModifierType,
+                values: {
+                    environment: environment_right,
+                    people: people_right,
+                    security: security_right,
+                    money: money_right,
+                    popularity: popularity_right
+                },
+                flags: {},
+                nextCardId: next_right_id,
+            }
+        ],
+    }));
 
-    // TODO: verify that we can get the right result from excelSimplifiedCardData()
-    // TODO: prepare CardDescriptor[] for editor
-    return [];
+    return cards;
 }
+
+export const DefaultSimplifiedCardData: SimplifiedCardData = {
+    'id': 'default',
+    'next_left_id': '',
+    'next_right_id': '',
+    'advisor_id': '',
+    'location': '',
+    'name': 'Default card name',
+    'text': '',
+    'left': '',
+    'right': '',
+    'environment_left': 0,
+    'people_left': 0,
+    'security_left': 0,
+    'money_left': 0,
+    'popularity_left': 0,
+    'environment_right': 0,
+    'people_right': 0,
+    'security_right': 0,
+    'money_right': 0,
+    'popularity_right': 0,
+};
 
 // A row in the excel file, representing a SfF card
 type SimplifiedCardData = {
@@ -47,6 +106,7 @@ type SimplifiedCardData = {
     'next_right_id': string,
     'advisor_id': string,
     'location': string,
+    'name': string,
     'text': string,
     'left': string,
     'right': string,
