@@ -1,5 +1,5 @@
 import React from 'react';
-import { TextField, ITextFieldProps } from 'office-ui-fabric-react';
+import { TextField, ITextFieldProps } from '@fluentui/react';
 import { useLazyUpdate } from '../LazyUpdate';
 
 export const LazyTextField: React.FunctionComponent<ITextFieldProps & {onChange: (ev: void, value?: string) => void}> = (props) => {

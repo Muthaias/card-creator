@@ -5,7 +5,7 @@ import {
     Dropdown,
     Slider,
     Toggle,
-} from 'office-ui-fabric-react';
+} from '@fluentui/react';
 import { stackTokens } from '../Styling';
 import { ItemEditor, ItemDescriptor} from './ItemEditor';
 import { ModifierType } from '../Types';

@@ -13,8 +13,8 @@
     "gen": "npx plop"
   },
   "dependencies": {
+    "@fluentui/react": "^7.147.1",
     "exceljs": "^3.8.1",
-    "office-ui-fabric-react": "^7.105.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
   },
@@ -22,7 +22,7 @@
     "@fortawesome/fontawesome-svg-core": "^1.2.27",
     "@fortawesome/free-solid-svg-icons": "^5.12.1",
     "@fortawesome/react-fontawesome": "^0.1.9",
-    "just-scripts": "^0.27.0",
+    "just-scripts": "^1.2.0",
     "just-stack-react": "^1.0.0"
   }
 }

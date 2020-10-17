@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { App } from './App';
-import { mergeStyles, registerIcons, loadTheme } from 'office-ui-fabric-react';
+import { mergeStyles, registerIcons, loadTheme } from '@fluentui/react';
 import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome';
 import { faTrashAlt, faPlusCircle, faEdit, faSave, faFolderOpen, faFile, faFileExport, faTimes } from '@fortawesome/free-solid-svg-icons';
 

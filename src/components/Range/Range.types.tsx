@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { RangeBase } from './Range.base';
-import { IStyle, ITheme } from 'office-ui-fabric-react';
-import { IStyleFunctionOrObject, IRefObject } from 'office-ui-fabric-react';
+import { IStyle, ITheme } from '@fluentui/react';
+import { IStyleFunctionOrObject, IRefObject } from '@fluentui/react';
 
 /**
  * {@docCategory Range}

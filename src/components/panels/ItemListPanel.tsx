@@ -1,6 +1,6 @@
 import React from 'react';
 import { Identity, NamedIdentity } from '../../Types';
-import { Stack, IconButton, DocumentCard, DocumentCardType, Text, DocumentCardDetails, DocumentCardActions, DocumentCardTitle, Separator } from 'office-ui-fabric-react';
+import { Stack, IconButton, DocumentCard, DocumentCardType, Text, DocumentCardDetails, DocumentCardActions, DocumentCardTitle, Separator } from '@fluentui/react';
 import { stackTokens } from '../../Styling';
 
 type Props<T> = {

@@ -1,5 +1,5 @@
 import React, {useContext} from 'react';
-import { Stack, Text, Slider, Dropdown, Image, Separator, Toggle, IconButton } from 'office-ui-fabric-react';
+import { Stack, Text, Slider, Dropdown, Image, Separator, Toggle, IconButton } from '@fluentui/react';
 import { LazyValueSection } from './ValueSection';
 import { LazyItemEditor, ItemDescriptor } from './ItemEditor';
 import { Range } from './Range';

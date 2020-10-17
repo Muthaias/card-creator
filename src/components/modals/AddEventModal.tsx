@@ -1,5 +1,5 @@
 import React, {useState, useCallback} from 'react';
-import { TextField } from 'office-ui-fabric-react';
+import { TextField } from '@fluentui/react';
 import { BaseModal } from './BaseModal';
 
 type Props = {

@@ -1,6 +1,6 @@
 import React, { useContext, useMemo, useCallback } from 'react';
 import { Identity, NamedIdentity, CardType } from '../../Types';
-import { DocumentCardPreview } from 'office-ui-fabric-react';
+import { DocumentCardPreview } from '@fluentui/react';
 import { CardsContext, ImagesContext } from '../../Contexts';
 import { ItemListPanel } from './ItemListPanel';
 import { sharedDocumentCardPreviewStyle } from './Styles';
