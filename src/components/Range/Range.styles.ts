@@ -1,5 +1,5 @@
-import { ISliderStyleProps, ISliderStyles } from 'office-ui-fabric-react';
-import { getGlobalClassNames, HighContrastSelector, AnimationVariables, getFocusStyle } from 'office-ui-fabric-react';
+import { ISliderStyleProps, ISliderStyles } from '@fluentui/react';
+import { getGlobalClassNames, HighContrastSelector, AnimationVariables, getFocusStyle } from '@fluentui/react';
 import { getRTL } from '@uifabric/utilities';
 
 const GlobalClassNames = {

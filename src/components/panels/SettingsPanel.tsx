@@ -1,5 +1,5 @@
 import React, { useContext, useState, useRef, useEffect } from 'react';
-import { Stack, TextField, Separator, DefaultButton } from 'office-ui-fabric-react';
+import { Stack, TextField, Separator, DefaultButton } from '@fluentui/react';
 import { stackTokens } from '../../Styling';
 import { Settings, SettingsContext } from '../../Settings';
 import { SystemContext } from '../../Contexts';

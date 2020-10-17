@@ -1,4 +1,4 @@
-import { ImageFit } from 'office-ui-fabric-react';
+import { ImageFit } from '@fluentui/react';
 
 export const sharedDocumentCardPreviewStyle = {
     width: 144,

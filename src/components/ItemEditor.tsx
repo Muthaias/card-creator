@@ -3,7 +3,7 @@ import {
     Stack,
     IconButton,
     Dropdown,
-} from 'office-ui-fabric-react';
+} from '@fluentui/react';
 import { stackTokens } from '../Styling';
 import { useLazyUpdate } from '../LazyUpdate';
 

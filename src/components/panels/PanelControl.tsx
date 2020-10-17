@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Panel } from 'office-ui-fabric-react';
+import { Panel } from '@fluentui/react';
 
 import { ParameterEditorPanel } from './ParameterEditorPanel';
 import { CardListPanel } from './CardListPanel';

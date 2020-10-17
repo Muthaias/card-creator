@@ -1,5 +1,5 @@
 import React from 'react';
-import { Stack, DefaultButton, PrimaryButton, DialogFooter } from 'office-ui-fabric-react';
+import { Stack, DefaultButton, PrimaryButton, DialogFooter } from '@fluentui/react';
 import { stackTokens } from '../../Styling';
 
 type Props = {

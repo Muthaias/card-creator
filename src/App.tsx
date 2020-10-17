@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { Stack, CommandBar, Layer, Text, Separator, Link } from 'office-ui-fabric-react';
+import { Stack, CommandBar, Layer, Text, Separator, Link } from '@fluentui/react';
 
 import { CardEditorPanel } from './components/CardEditorPanel';
 import { PanelControl } from './components/panels/PanelControl';

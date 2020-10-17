@@ -1,9 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { App } from './App';
-import { mergeStyles, registerIcons, loadTheme } from 'office-ui-fabric-react';
+import { mergeStyles, registerIcons, loadTheme } from '@fluentui/react';
 import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome';
-import { faTrashAlt, faPlusCircle, faEdit, faSave, faFolderOpen, faFile, faFileExport, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faTrashAlt, faPlusCircle, faEdit, faSave, faFolderOpen, faFile, faFileExport, faTimes, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 
 // Inject some global styles
 mergeStyles({
@@ -28,7 +28,8 @@ registerIcons({
       'Edit': <Icon icon={faEdit} />,
       'Save': <Icon icon={faSave} />,
       'OpenFile': <Icon icon={faFolderOpen} />,
-      'Cancel': <Icon icon={faTimes} />
+      'Cancel': <Icon icon={faTimes} />,
+      'chevrondown': <Icon icon={faChevronDown} />,
   },
 });
 

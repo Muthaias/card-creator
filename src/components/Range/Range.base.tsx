@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { BaseComponent, KeyCodes, css, getId, getRTL, getRTLSafeKeyCode } from 'office-ui-fabric-react';
+import { BaseComponent, KeyCodes, css, getId, getRTL, getRTLSafeKeyCode } from '@fluentui/react';
 import { IRangeProps, IRange, IRangeStyleProps, IRangeStyles, RangeValue } from './Range.types';
-import { classNamesFunction, getNativeProps, divProperties } from 'office-ui-fabric-react';
-import { Label } from 'office-ui-fabric-react';
+import { classNamesFunction, getNativeProps, divProperties } from '@fluentui/react';
+import { Label } from '@fluentui/react';
 
 export interface IRangeState {
   value?: RangeValue;

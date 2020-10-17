@@ -1,5 +1,5 @@
 import React, { useMemo, useContext } from 'react';
-import { Dialog } from 'office-ui-fabric-react';
+import { Dialog } from '@fluentui/react';
 
 import { AddImageModal } from './AddImageModal';
 import { AddCardModal } from './AddCardModal';
