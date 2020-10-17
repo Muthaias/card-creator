@@ -1,6 +1,6 @@
 const { webpackMerge, htmlOverlay, webpackServeConfig } = require('just-scripts');
 module.exports = webpackMerge(
-  webpackServeConfig,
+  webpackServeConfig(),
   htmlOverlay({
     template: 'public/index.html'
   }),

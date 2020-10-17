@@ -21,7 +21,7 @@
     "@fortawesome/fontawesome-svg-core": "^1.2.27",
     "@fortawesome/free-solid-svg-icons": "^5.12.1",
     "@fortawesome/react-fontawesome": "^0.1.9",
-    "just-scripts": "^0.27.0",
+    "just-scripts": "^1.2.0",
     "just-stack-react": "^1.0.0"
   }
 }
