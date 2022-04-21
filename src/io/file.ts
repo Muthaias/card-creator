@@ -41,7 +41,7 @@ export function createFileFunctions<T extends Object>(
             try {
                 const data = await uploadObject(file);
                 onLoadData(data);
-            } catch (e) {
+            } catch (e: any) {
                 onError('Failed to load file: ' + e.message);
             }
         },
