@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { Text, Slider, Toggle, Separator, IconButton, Dropdown } from '@fluentui/react';
-import { EventDescriptor, ParameterDescriptor, CardCondition, ParameterType, CardType, CardDescriptor, Unidentified } from '../Types';
+import { EventDescriptor, ParameterDescriptor, CardCondition, ParameterType, CardType, CardDescriptor } from '../Types';
 import { ItemDescriptor, LazyItemEditor } from './ItemEditor';
 import { Stack } from '@fluentui/react';
 import { LazyTextField } from './LazyTextField';

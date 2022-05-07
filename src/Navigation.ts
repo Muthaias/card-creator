@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Identity, CardType } from './Types';
+import { Identity } from './Types';
 
 function updateUrl(params: URLSearchParams) {
     const newurl = window.location.protocol + '//' + window.location.host + window.location.pathname + '?' + params.toString();

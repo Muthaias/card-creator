@@ -1,4 +1,4 @@
-import React, { useContext, useMemo, useCallback } from 'react';
+import React, { useContext, useCallback } from 'react';
 import { Identity, NamedIdentity, ImageDescriptor } from '../../Types';
 import { DocumentCardPreview } from '@fluentui/react';
 import { EventsContext, CardsContext, ImagesContext } from '../../Contexts';

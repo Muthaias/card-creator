@@ -1,11 +1,10 @@
-import React from 'react';
+import {createContext} from 'react';
 import {
     ImageDescriptor,
     ActionDescriptor,
     ParameterDescriptor,
     ParameterType,
     CardDescriptor,
-    Identity,
     EventDescriptor,
 } from './Types';
 import {
@@ -14,21 +13,21 @@ import {
 } from './ItemCrud';
 
 
-export const ActionsContext = React.createContext<CrudContext<ActionDescriptor>>(
+export const ActionsContext = createContext<CrudContext<ActionDescriptor>>(
     createInitialCrudContext<ActionDescriptor>(
         ['Left', 'Right'].map(name => ({id: name.toLowerCase(), name: name}))
     )
 );
-export const ImagesContext = React.createContext<CrudContext<ImageDescriptor>>(
+export const ImagesContext = createContext<CrudContext<ImageDescriptor>>(
     createInitialCrudContext<ImageDescriptor>([])
 );
-export const CardsContext = React.createContext<CrudContext<CardDescriptor>>(
+export const CardsContext = createContext<CrudContext<CardDescriptor>>(
     createInitialCrudContext<CardDescriptor>([])
 );
-export const EventsContext = React.createContext<CrudContext<EventDescriptor>>(
+export const EventsContext = createContext<CrudContext<EventDescriptor>>(
     createInitialCrudContext<EventDescriptor>([])
 )
-export const ParametersContext = React.createContext<CrudContext<ParameterDescriptor>>(
+export const ParametersContext = createContext<CrudContext<ParameterDescriptor>>(
     createInitialCrudContext([
         ...[
             'Environment',
@@ -46,7 +45,7 @@ export type SystemFunctions = {
     loadFile(file: File): void;
     downloadFile(name: string): void;
 };
-export const SystemContext = React.createContext<SystemFunctions>({
+export const SystemContext = createContext<SystemFunctions>({
     loadFile: () => {},
     downloadFile: () => {},
 });

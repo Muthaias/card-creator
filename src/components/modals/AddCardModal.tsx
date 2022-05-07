@@ -1,5 +1,5 @@
 import React, {useState, useCallback} from 'react';
-import { Image, TextField, Dropdown } from '@fluentui/react';
+import { TextField } from '@fluentui/react';
 import { BaseModal } from './BaseModal';
 
 type Props = {

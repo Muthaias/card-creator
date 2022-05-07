@@ -5,7 +5,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "serve": "serve ./dist",
-    "build": "webpack --env.production",
+    "build": "webpack build --env production",
     "start": "webpack"
   },
   "dependencies": {
